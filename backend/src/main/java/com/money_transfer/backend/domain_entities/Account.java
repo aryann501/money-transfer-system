@@ -1,41 +1,68 @@
 package com.money_transfer.backend.domain_entities;
 
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-public class Account{
-    private Long id;
-    private String accountHolderName;
-    private BigDecimal balance;
+public class Account {
+    private String id;
+    private String holderName;
+    private double balance;
     private AccountStatus status;
+    private int version;
+    private LocalDateTime lastUpdated;
 
-    public Account(Long id, String accountHolderName, BigDecimal balance, AccountStatus status) {
+    public Account(String id, String holderName, double balance, AccountStatus status, int version) {
         this.id = id;
-        this.accountHolderName = accountHolderName;
+        this.holderName = holderName;
         this.balance = balance;
         this.status = status;
+        this.version = version;
+        this.lastUpdated = LocalDateTime.now();
     }
 
-    public Long getId() {
+    public void debit(double amount) {
+        if (status == AccountStatus.ACTIVE && balance >= amount) {
+            balance -= amount;
+            lastUpdated = LocalDateTime.now();
+        } else {
+            throw new IllegalArgumentException("Insufficient funds or account is not active.");
+        }
+    }
+
+    public void credit(double amount) {
+        if (status == AccountStatus.ACTIVE) {
+            balance += amount;
+            lastUpdated = LocalDateTime.now();
+        } else {
+            throw new IllegalArgumentException("Account is not active.");
+        }
+    }
+
+    public boolean isActive() {
+        return status == AccountStatus.ACTIVE;
+    }
+
+    // Getters and Setters
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public String getAccountHolderName() {
-        return accountHolderName;
+    public String getHolderName() {
+        return holderName;
     }
 
-    public void setAccountHolderName(String accountHolderName) {
-        this.accountHolderName = accountHolderName;
+    public void setHolderName(String holderName) {
+        this.holderName = holderName;
     }
 
-    public BigDecimal getBalance() {
+    public double getBalance() {
         return balance;
     }
 
-    public void setBalance(BigDecimal balance) {
+    public void setBalance(double balance) {
         this.balance = balance;
     }
 
@@ -47,14 +74,19 @@ public class Account{
         this.status = status;
     }
 
-    public void debit(BigDecimal amount) {
-        if (amount.compareTo(balance) > 0) {
-            throw new InsufficientFundsException("Insufficient funds for this transaction.");
-        }
-        balance = balance.subtract(amount);
+    public int getVersion() {
+        return version;
     }
 
-    public void credit(BigDecimal amount) {
-        balance = balance.add(amount);
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public LocalDateTime getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(LocalDateTime lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 }

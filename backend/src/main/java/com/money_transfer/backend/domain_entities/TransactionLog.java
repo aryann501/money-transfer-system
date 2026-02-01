@@ -1,55 +1,59 @@
 package com.money_transfer.backend.domain_entities;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class TransactionLog {
-    private Long id;
-    private Long accountId;
-    private BigDecimal amount;
-    private LocalDateTime transactionTime;
+    private String id;
+    private String fromAccountId;
+    private String toAccountId;
+    private double amount;
     private TransactionStatus status;
-    private String description;
+    private String failureReason;
+    private String idempotencyKey;
+    private LocalDateTime createdOn;
 
-    public TransactionLog(Long id, Long accountId, BigDecimal amount, LocalDateTime transactionTime, TransactionStatus status, String description) {
+    public TransactionLog(String id, String fromAccountId, String toAccountId, double amount, 
+                          TransactionStatus status, String failureReason, String idempotencyKey) {
         this.id = id;
-        this.accountId = accountId;
+        this.fromAccountId = fromAccountId;
+        this.toAccountId = toAccountId;
         this.amount = amount;
-        this.transactionTime = transactionTime;
         this.status = status;
-        this.description = description;
+        this.failureReason = failureReason;
+        this.idempotencyKey = idempotencyKey;
+        this.createdOn = LocalDateTime.now();
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public Long getAccountId() {
-        return accountId;
+    public String getFromAccountId() {
+        return fromAccountId;
     }
 
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
+    public void setFromAccountId(String fromAccountId) {
+        this.fromAccountId = fromAccountId;
     }
 
-    public BigDecimal getAmount() {
+    public String getToAccountId() {
+        return toAccountId;
+    }
+
+    public void setToAccountId(String toAccountId) {
+        this.toAccountId = toAccountId;
+    }
+
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
-    }
-
-    public LocalDateTime getTransactionTime() {
-        return transactionTime;
-    }
-
-    public void setTransactionTime(LocalDateTime transactionTime) {
-        this.transactionTime = transactionTime;
     }
 
     public TransactionStatus getStatus() {
@@ -60,11 +64,27 @@ public class TransactionLog {
         this.status = status;
     }
 
-    public String getDescription() {
-        return description;
+    public String getFailureReason() {
+        return failureReason;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setFailureReason(String failureReason) {
+        this.failureReason = failureReason;
+    }
+
+    public String getIdempotencyKey() {
+        return idempotencyKey;
+    }
+
+    public void setIdempotencyKey(String idempotencyKey) {
+        this.idempotencyKey = idempotencyKey;
+    }
+
+    public LocalDateTime getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(LocalDateTime createdOn) {
+        this.createdOn = createdOn;
     }
 }
