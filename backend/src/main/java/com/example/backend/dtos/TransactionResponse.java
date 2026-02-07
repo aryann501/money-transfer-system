@@ -4,20 +4,20 @@ import java.time.LocalDateTime;
 
 public class TransactionResponse {
 
-    private Long fromAccountId;
+    private String fromAccountId;
     private String fromAccountHolderName;
-    private Long toAccountId;
+    private String toAccountId;
     private String toAccountHolderName;
     private Double amount;
     private String status;  // SUCCESS or FAILED
     private LocalDateTime createdOn;
 
     // Getters and Setters
-    public Long getFromAccountId() {
+    public String getFromAccountId() {
         return fromAccountId;
     }
 
-    public void setFromAccountId(Long fromAccountId) {
+    public void setFromAccountId(String fromAccountId) {
         this.fromAccountId = fromAccountId;
     }
 
@@ -29,11 +29,11 @@ public class TransactionResponse {
         this.fromAccountHolderName = fromAccountHolderName;
     }
 
-    public Long getToAccountId() {
+    public String getToAccountId() {
         return toAccountId;
     }
 
-    public void setToAccountId(Long toAccountId) {
+    public void setToAccountId(String toAccountId) {
         this.toAccountId = toAccountId;
     }
 

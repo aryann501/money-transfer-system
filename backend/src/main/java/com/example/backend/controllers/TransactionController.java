@@ -1,7 +1,6 @@
 package com.example.backend.controllers;
 
 import com.example.backend.dtos.TransactionResponse;
-import com.example.backend.entity.TransactionLog;
 import com.example.backend.services.TransferService;
 import com.example.backend.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +20,8 @@ public class TransactionController {
     // POST http://localhost:8080/api/v1/transfers
     @PostMapping
     public ResponseEntity<TransactionResponse> transfer(
-            @RequestParam Long fromAccountId,
-            @RequestParam Long toAccountId,
+            @RequestParam String fromAccountId,
+            @RequestParam String toAccountId,
             @RequestParam Double amount,
             @RequestParam String idempotencyKey
     ) throws AccountNotFoundException, AccountNotActiveException,

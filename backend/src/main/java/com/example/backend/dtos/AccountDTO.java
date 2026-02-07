@@ -7,6 +7,7 @@ public class AccountDTO {
     private Long id;
     private String holderName;
     private Double balance;
+    private String accountId;
     private String status;
     private Integer version;
     private LocalDateTime lastUpdated;
@@ -22,6 +23,14 @@ public class AccountDTO {
 
     public String getHolderName() {
         return holderName;
+    }
+
+    public String getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
     }
 
     public void setHolderName(String holderName) {

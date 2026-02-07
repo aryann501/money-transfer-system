@@ -1,13 +1,20 @@
-package com.example.backend.entity;
+package com.example.backend.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+import org.jspecify.annotations.Nullable;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
 @Setter
-public class User {
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,39 +28,17 @@ public class User {
 
     // One account per user
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "account_id", referencedColumnName = "id")
+    @JoinColumn(name = "account_id", referencedColumnName = "account_id")
     private Account account;
 
-    public Long getId() {
-        return id;
-    }
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @ToString.Exclude
+    private Set<Role> roles = new HashSet<>();
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
+    public UserEntity(String username, String password) {
         this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
         this.password = password;
-    }
-
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
     }
 
     @Override

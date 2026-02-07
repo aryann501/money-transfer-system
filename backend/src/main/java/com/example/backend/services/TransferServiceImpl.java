@@ -1,13 +1,13 @@
 package com.example.backend.services;
 
 import com.example.backend.dtos.TransactionResponse;
-import com.example.backend.entity.Account;
-import com.example.backend.entity.TransactionLog;
+import com.example.backend.entities.Account;
+import com.example.backend.entities.TransactionLog;
 import com.example.backend.enums.AccountStatus;
 import com.example.backend.enums.TransactionStatus;
 import com.example.backend.exceptions.*;
-import com.example.backend.repository.AccountRepository;
-import com.example.backend.repository.TransactionLogRepository;
+import com.example.backend.repositories.AccountRepository;
+import com.example.backend.repositories.TransactionLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +23,7 @@ public class TransferServiceImpl implements TransferService {
     private TransactionLogRepository transactionLogRepository;
 
     @Override
-    public TransactionResponse transfer(Long fromAccountId, Long toAccountId, Double amount, String idempotencyKey)
+    public TransactionResponse transfer(String fromAccountId, String toAccountId, Double amount, String idempotencyKey)
             throws AccountNotFoundException, AccountNotActiveException,
             InsufficientBalanceException, DuplicateTransferException {
 
@@ -31,10 +31,10 @@ public class TransferServiceImpl implements TransferService {
         TransactionStatus transactionStatus = TransactionStatus.SUCCESS;
 
         // Fetch the sender and receiver accounts
-        Account fromAccount = accountRepository.findById(fromAccountId)
+        Account fromAccount = accountRepository.findByAccountId(fromAccountId)
                 .orElseThrow(() -> new AccountNotFoundException("Sender account not found: " + fromAccountId));
 
-        Account toAccount = accountRepository.findById(toAccountId)
+        Account toAccount = accountRepository.findByAccountId(toAccountId)
                 .orElseThrow(() -> new AccountNotFoundException("Receiver account not found: " + toAccountId));
 
         try {
@@ -83,9 +83,9 @@ public class TransferServiceImpl implements TransferService {
 
         // Return a simplified response with transaction details and status
         TransactionResponse response = new TransactionResponse();
-        response.setFromAccountId(fromAccount.getId());
+        response.setFromAccountId(fromAccount.getAccountId());
         response.setFromAccountHolderName(fromAccount.getHolderName());
-        response.setToAccountId(toAccount.getId());
+        response.setToAccountId(toAccount.getAccountId());
         response.setToAccountHolderName(toAccount.getHolderName());
         response.setAmount(amount);
         response.setStatus(transactionStatus.name());  // Use enum's string value (SUCCESS/FAILED)

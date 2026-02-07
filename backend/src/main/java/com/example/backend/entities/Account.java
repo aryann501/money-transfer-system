@@ -1,7 +1,9 @@
-package com.example.backend.entity;
+package com.example.backend.entities;
 
 import com.example.backend.enums.AccountStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,6 +17,9 @@ public class Account {
     private String holderName;
 
     private Double balance;
+
+    @Column(name = "account_id", unique = true, nullable = false, length = 7)
+    private String accountId;
 
     private AccountStatus status;
 
@@ -43,6 +48,14 @@ public class Account {
     }
     public void setHolderName(String holderName) {
         this.holderName = holderName;
+    }
+
+    public String getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
     }
 
     public Double getBalance() {
@@ -93,6 +106,7 @@ public class Account {
                 "id=" + id +
                 ", holderName='" + holderName + '\'' +
                 ", balance=" + balance +
+                ", Account Id=" + accountId +
                 ", status=" + status +
                 ", version=" + version +
                 ", lastUpdated=" + lastUpdated +

@@ -1,10 +1,7 @@
-package com.example.backend.entity;
+package com.example.backend.entities;
 
 import com.example.backend.enums.TransactionStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
 
