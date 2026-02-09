@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import com.example.backend.entities.Account;
 import com.example.backend.enums.AccountStatus;
 import com.example.backend.services.AccountService;
-import com.example.backend.services.AccountServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -54,6 +53,9 @@ public class AuthController {
     @Autowired
     JwtUtils jwtUtils;
 
+    @Autowired
+    AccountService accountService;
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
@@ -95,12 +97,18 @@ public class AuthController {
 
         // Create Account
         Account account = new Account();
+<<<<<<< HEAD
         AccountService acc = new AccountServiceImpl();
         account.setBalance(signUpRequest.getMinBalance());
         account.setHolderName(signUpRequest.getHolderName()); // separate from username
         account.setStatus(AccountStatus.ACTIVE);
+=======
+        account.setBalance(0.0);
+        account.setHolderName(signUpRequest.getUsername());
+        account.setStatus(AccountStatus.valueOf("ACTIVE"));
+>>>>>>> f8e4805 (Added proper unit Test cases with 93% code coverage from Jacoco)
         account.setVersion(1);
-        account.setAccountId(acc.generateAccountId());
+        account.setAccountId(accountService.generateAccountId());
         account.setLastUpdated(LocalDateTime.now());
 
         user.setAccount(account);

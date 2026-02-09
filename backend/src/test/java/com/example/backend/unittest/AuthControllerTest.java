@@ -4,10 +4,18 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+<<<<<<< HEAD
 import static org.junit.jupiter.api.Assertions.*;
+=======
+>>>>>>> f8e4805 (Added proper unit Test cases with 93% code coverage from Jacoco)
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.when;
@@ -81,8 +89,14 @@ class AuthControllerTest {
 
         ResponseEntity<?> response = authController.authenticateUser(loginRequest);
 
+<<<<<<< HEAD
         assertEquals(200, response.getStatusCodeValue());
         assertTrue(response.getBody() instanceof JwtResponse);
+=======
+        // Assert
+        assertEquals(200, response.getStatusCode().value());
+        assertInstanceOf(JwtResponse.class, response.getBody());
+>>>>>>> f8e4805 (Added proper unit Test cases with 93% code coverage from Jacoco)
         JwtResponse jwtResponse = (JwtResponse) response.getBody();
         assertEquals("mock-jwt-token", jwtResponse.getToken());
         assertEquals("username", jwtResponse.getUsername());
@@ -113,6 +127,7 @@ class AuthControllerTest {
         when(userRepository.existsByUsername("newuser")).thenReturn(false);
         when(roleRepository.findByRoleName(ERole.ROLE_USER)).thenReturn(Optional.of(new Role(ERole.ROLE_USER)));
         when(accountService.generateAccountId()).thenReturn("123456789");
+        when(encoder.encode(anyString())).thenReturn("encodedPassword");
 
         UserEntity user = new UserEntity();
         user.setId(1L);
@@ -126,16 +141,27 @@ class AuthControllerTest {
         account.setStatus(AccountStatus.ACTIVE);
         user.setAccount(account);
 
-        when(userRepository.save(any(UserEntity.class))).thenReturn(user);
+        when(userRepository.save(any(UserEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         ResponseEntity<?> response = authController.registerUser(signUpRequest);
 
+<<<<<<< HEAD
         assertEquals(200, response.getStatusCodeValue());
         assertTrue(response.getBody() instanceof SignupResponse);
         SignupResponse signupResponse = (SignupResponse) response.getBody();
         assertEquals("newuser", signupResponse.getUsername());
         assertEquals("John Doe", signupResponse.getHolderName());
         assertEquals(1500.0, signupResponse.getBalance());
+=======
+        // Assert
+        assertEquals(200, response.getStatusCode().value());
+        assertInstanceOf(MessageResponse.class, response.getBody());
+        MessageResponse messageResponse = (MessageResponse) response.getBody();
+        assertEquals("User registered successfully!", messageResponse.getMessage());
+        
+        verify(accountService, times(1)).generateAccountId();
+        verify(userRepository, times(1)).save(any(UserEntity.class));
+>>>>>>> f8e4805 (Added proper unit Test cases with 93% code coverage from Jacoco)
     }
 
     @Test
@@ -150,7 +176,15 @@ class AuthControllerTest {
 
         ResponseEntity<?> response = authController.registerUser(signUpRequest);
 
+<<<<<<< HEAD
         assertEquals(400, response.getStatusCodeValue());
+=======
+        // Assert
+        assertEquals(400, response.getStatusCode().value());
+        assertInstanceOf(MessageResponse.class, response.getBody());
+        MessageResponse messageResponse = (MessageResponse) response.getBody();
+        assertEquals("Error: Username is already taken!", messageResponse.getMessage());
+>>>>>>> f8e4805 (Added proper unit Test cases with 93% code coverage from Jacoco)
     }
 
     @Test
@@ -171,6 +205,7 @@ class AuthControllerTest {
                 () -> authController.registerUser(signUpRequest));
         assertEquals("Error: Role is not found.", exception.getMessage());
     }
+<<<<<<< HEAD
 
     @Test
     void testRegisterUser_insufficientBalance() {
@@ -184,5 +219,53 @@ class AuthControllerTest {
 
         assertThrows(InsufficientBalanceException.class,
                 () -> authController.registerUser(signUpRequest));
+=======
+    
+    @Test
+    void testRegisterUser_adminRole() {
+        // Arrange
+        SignupRequest signUpRequest = new SignupRequest();
+        signUpRequest.setUsername("adminuser");
+        signUpRequest.setPassword("password123");
+        Set<String> roles = new HashSet<>();
+        roles.add("admin");
+        signUpRequest.setRole(roles);
+
+        when(userRepository.existsByUsername("adminuser")).thenReturn(false);
+        when(roleRepository.findByRoleName(ERole.ROLE_ADMIN)).thenReturn(Optional.of(new Role(ERole.ROLE_ADMIN)));
+        when(accountService.generateAccountId()).thenReturn("ADMIN123");
+        when(encoder.encode(anyString())).thenReturn("encodedPassword");
+        when(userRepository.save(any(UserEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        ResponseEntity<?> response = authController.registerUser(signUpRequest);
+
+        // Assert
+        assertEquals(200, response.getStatusCode().value());
+        verify(userRepository, times(1)).save(any(UserEntity.class));
+    }
+    
+    @Test
+    void testRegisterUser_nullRole_defaultsToUser() {
+        // Arrange
+        SignupRequest signUpRequest = new SignupRequest();
+        signUpRequest.setUsername("defaultuser");
+        signUpRequest.setPassword("password123");
+        signUpRequest.setRole(null);
+
+        when(userRepository.existsByUsername("defaultuser")).thenReturn(false);
+        when(roleRepository.findByRoleName(ERole.ROLE_USER)).thenReturn(Optional.of(new Role(ERole.ROLE_USER)));
+        when(accountService.generateAccountId()).thenReturn("USER123");
+        when(encoder.encode(anyString())).thenReturn("encodedPassword");
+        when(userRepository.save(any(UserEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        ResponseEntity<?> response = authController.registerUser(signUpRequest);
+
+        // Assert
+        assertEquals(200, response.getStatusCode().value());
+        verify(roleRepository, times(1)).findByRoleName(ERole.ROLE_USER);
+        verify(userRepository, times(1)).save(any(UserEntity.class));
+>>>>>>> f8e4805 (Added proper unit Test cases with 93% code coverage from Jacoco)
     }
 }

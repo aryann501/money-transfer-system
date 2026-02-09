@@ -26,6 +26,7 @@ public class AccountServiceImpl implements AccountService {
         // Convert the Account entity to AccountDTO directly
         AccountDTO accountDTO = new AccountDTO();
         accountDTO.setId(account.getId());
+        accountDTO.setAccountId(account.getAccountId());
         accountDTO.setHolderName(account.getHolderName());
         accountDTO.setAccountId(account.getAccountId());
         accountDTO.setBalance(account.getBalance());

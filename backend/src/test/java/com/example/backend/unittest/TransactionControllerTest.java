@@ -1,22 +1,32 @@
 package com.example.backend.unittest;
 
 import com.example.backend.controllers.TransactionController;
+<<<<<<< HEAD
 import com.example.backend.dtos.UserTransferRequest;
 import com.example.backend.dtos.TransactionResponse;
 import com.example.backend.exceptions.*;
 import com.example.backend.security.service.UserDetailsImpl;
+=======
+import com.example.backend.dtos.TransactionResponse;
+import com.example.backend.enums.TransactionStatus;
+>>>>>>> f8e4805 (Added proper unit Test cases with 93% code coverage from Jacoco)
 import com.example.backend.services.TransferService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+<<<<<<< HEAD
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Collections;
+=======
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+>>>>>>> f8e4805 (Added proper unit Test cases with 93% code coverage from Jacoco)
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -29,13 +39,17 @@ class TransactionControllerTest {
     @Mock
     private TransferService transferService;
 
+<<<<<<< HEAD
     private UserDetailsImpl userDetails;
 
+=======
+>>>>>>> f8e4805 (Added proper unit Test cases with 93% code coverage from Jacoco)
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
+<<<<<<< HEAD
     // --- USER TRANSFER TESTS ---
 
     @Test
@@ -138,5 +152,29 @@ class TransactionControllerTest {
                 accountId
         );
         SecurityContextHolder.getContext().setAuthentication(new TestingAuthenticationToken(userDetails, null));
+=======
+    @Test
+    void testTransfer_success() throws Exception {
+        // Arrange
+        String from = "ACC1";
+        String to = "ACC2";
+        Double amount = 100.0;
+        String key = "key1";
+        
+        TransactionResponse txResponse = new TransactionResponse();
+        txResponse.setStatus(TransactionStatus.SUCCESS.name());
+        txResponse.setAmount(amount);
+
+        when(transferService.transfer(from, to, amount, key)).thenReturn(txResponse);
+
+        // Act
+        ResponseEntity<TransactionResponse> response = transactionController.transfer(from, to, amount, key);
+
+        // Assert
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(txResponse, response.getBody());
+        assertNotNull(response.getBody());
+        assertEquals("SUCCESS", response.getBody().getStatus());
+>>>>>>> f8e4805 (Added proper unit Test cases with 93% code coverage from Jacoco)
     }
 }
