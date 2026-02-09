@@ -1,12 +1,18 @@
 package com.example.backend.security.payload.request;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class LoginRequest {
 
+    // Getter and Setter for username
     @NotBlank
     private String username;
 
+    // Getter and Setter for password
     @NotBlank
     private String password;
 
@@ -17,24 +23,6 @@ public class LoginRequest {
     // All-args constructor
     public LoginRequest(String username, String password) {
         this.username = username;
-        this.password = password;
-    }
-
-    // Getter and Setter for username
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    // Getter and Setter for password
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
         this.password = password;
     }
 

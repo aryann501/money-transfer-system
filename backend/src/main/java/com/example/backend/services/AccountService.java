@@ -6,7 +6,6 @@ import com.example.backend.dtos.TransactionResponse;
 import com.example.backend.exceptions.AccountNotFoundException;
 
 import java.util.List;
-import java.util.Random;
 
 public interface AccountService {
     AccountDTO getAccount(String id) throws AccountNotFoundException;

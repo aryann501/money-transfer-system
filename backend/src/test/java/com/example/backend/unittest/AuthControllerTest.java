@@ -4,14 +4,10 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-<<<<<<< HEAD
 import static org.junit.jupiter.api.Assertions.*;
-=======
->>>>>>> f8e4805 (Added proper unit Test cases with 93% code coverage from Jacoco)
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -39,6 +35,7 @@ import com.example.backend.security.payload.request.LoginRequest;
 import com.example.backend.security.payload.request.SignupRequest;
 import com.example.backend.security.payload.response.JwtResponse;
 import com.example.backend.security.payload.response.SignupResponse;
+import com.example.backend.security.payload.response.MessageResponse;
 import com.example.backend.security.service.UserDetailsImpl;
 import com.example.backend.services.AccountService;
 
@@ -89,14 +86,8 @@ class AuthControllerTest {
 
         ResponseEntity<?> response = authController.authenticateUser(loginRequest);
 
-<<<<<<< HEAD
         assertEquals(200, response.getStatusCodeValue());
         assertTrue(response.getBody() instanceof JwtResponse);
-=======
-        // Assert
-        assertEquals(200, response.getStatusCode().value());
-        assertInstanceOf(JwtResponse.class, response.getBody());
->>>>>>> f8e4805 (Added proper unit Test cases with 93% code coverage from Jacoco)
         JwtResponse jwtResponse = (JwtResponse) response.getBody();
         assertEquals("mock-jwt-token", jwtResponse.getToken());
         assertEquals("username", jwtResponse.getUsername());
@@ -129,39 +120,20 @@ class AuthControllerTest {
         when(accountService.generateAccountId()).thenReturn("123456789");
         when(encoder.encode(anyString())).thenReturn("encodedPassword");
 
-        UserEntity user = new UserEntity();
-        user.setId(1L);
-        user.setUsername("newuser");
-        user.setPassword("encodedpassword");
-        user.setRoles(new HashSet<>());
-        Account account = new Account();
-        account.setAccountId("123456789");
-        account.setHolderName("John Doe");
-        account.setBalance(1500.0);
-        account.setStatus(AccountStatus.ACTIVE);
-        user.setAccount(account);
-
+        // Mock save to return the user
         when(userRepository.save(any(UserEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         ResponseEntity<?> response = authController.registerUser(signUpRequest);
 
-<<<<<<< HEAD
         assertEquals(200, response.getStatusCodeValue());
         assertTrue(response.getBody() instanceof SignupResponse);
         SignupResponse signupResponse = (SignupResponse) response.getBody();
         assertEquals("newuser", signupResponse.getUsername());
         assertEquals("John Doe", signupResponse.getHolderName());
         assertEquals(1500.0, signupResponse.getBalance());
-=======
-        // Assert
-        assertEquals(200, response.getStatusCode().value());
-        assertInstanceOf(MessageResponse.class, response.getBody());
-        MessageResponse messageResponse = (MessageResponse) response.getBody();
-        assertEquals("User registered successfully!", messageResponse.getMessage());
-        
+
         verify(accountService, times(1)).generateAccountId();
         verify(userRepository, times(1)).save(any(UserEntity.class));
->>>>>>> f8e4805 (Added proper unit Test cases with 93% code coverage from Jacoco)
     }
 
     @Test
@@ -176,15 +148,10 @@ class AuthControllerTest {
 
         ResponseEntity<?> response = authController.registerUser(signUpRequest);
 
-<<<<<<< HEAD
         assertEquals(400, response.getStatusCodeValue());
-=======
-        // Assert
-        assertEquals(400, response.getStatusCode().value());
-        assertInstanceOf(MessageResponse.class, response.getBody());
+        assertTrue(response.getBody() instanceof MessageResponse);
         MessageResponse messageResponse = (MessageResponse) response.getBody();
         assertEquals("Error: Username is already taken!", messageResponse.getMessage());
->>>>>>> f8e4805 (Added proper unit Test cases with 93% code coverage from Jacoco)
     }
 
     @Test
@@ -205,7 +172,6 @@ class AuthControllerTest {
                 () -> authController.registerUser(signUpRequest));
         assertEquals("Error: Role is not found.", exception.getMessage());
     }
-<<<<<<< HEAD
 
     @Test
     void testRegisterUser_insufficientBalance() {
@@ -219,14 +185,16 @@ class AuthControllerTest {
 
         assertThrows(InsufficientBalanceException.class,
                 () -> authController.registerUser(signUpRequest));
-=======
-    
+    }
+
     @Test
     void testRegisterUser_adminRole() {
         // Arrange
         SignupRequest signUpRequest = new SignupRequest();
         signUpRequest.setUsername("adminuser");
         signUpRequest.setPassword("password123");
+        signUpRequest.setHolderName("Admin User");
+        signUpRequest.setMinBalance(2000.0);
         Set<String> roles = new HashSet<>();
         roles.add("admin");
         signUpRequest.setRole(roles);
@@ -241,16 +209,19 @@ class AuthControllerTest {
         ResponseEntity<?> response = authController.registerUser(signUpRequest);
 
         // Assert
-        assertEquals(200, response.getStatusCode().value());
+        assertEquals(200, response.getStatusCodeValue());
+        assertTrue(response.getBody() instanceof SignupResponse);
         verify(userRepository, times(1)).save(any(UserEntity.class));
     }
-    
+
     @Test
     void testRegisterUser_nullRole_defaultsToUser() {
         // Arrange
         SignupRequest signUpRequest = new SignupRequest();
         signUpRequest.setUsername("defaultuser");
         signUpRequest.setPassword("password123");
+        signUpRequest.setHolderName("Default User");
+        signUpRequest.setMinBalance(1500.0);
         signUpRequest.setRole(null);
 
         when(userRepository.existsByUsername("defaultuser")).thenReturn(false);
@@ -263,9 +234,9 @@ class AuthControllerTest {
         ResponseEntity<?> response = authController.registerUser(signUpRequest);
 
         // Assert
-        assertEquals(200, response.getStatusCode().value());
+        assertEquals(200, response.getStatusCodeValue());
+        assertTrue(response.getBody() instanceof SignupResponse);
         verify(roleRepository, times(1)).findByRoleName(ERole.ROLE_USER);
         verify(userRepository, times(1)).save(any(UserEntity.class));
->>>>>>> f8e4805 (Added proper unit Test cases with 93% code coverage from Jacoco)
     }
 }

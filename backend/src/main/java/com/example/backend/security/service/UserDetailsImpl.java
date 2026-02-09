@@ -1,6 +1,7 @@
 package com.example.backend.security.service;
 
 import com.example.backend.entities.UserEntity;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -8,12 +9,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+@Getter
 public class UserDetailsImpl implements UserDetails {
-    private Long id;
-    private String username;
-    private String password;
-    private Collection<? extends GrantedAuthority> authorities;
-    private String accountId;
+    private final Long id;
+    private final String username;
+    private final String password;
+    private final Collection<? extends GrantedAuthority> authorities;
+    private final String accountId;
 
     public UserDetailsImpl(Long id, String username, String password,
                            Collection<? extends GrantedAuthority> authorities,
@@ -37,14 +39,6 @@ public class UserDetailsImpl implements UserDetails {
                 authorities,
                 user.getAccount() != null ? user.getAccount().getAccountId() : null
         );
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getAccountId() {
-        return accountId;
     }
 
     @Override
@@ -85,8 +79,7 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof UserDetailsImpl)) return false;
-        UserDetailsImpl that = (UserDetailsImpl) o;
+        if (!(o instanceof UserDetailsImpl that)) return false;
         return Objects.equals(id, that.id);
     }
 

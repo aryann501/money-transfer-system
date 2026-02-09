@@ -1,7 +1,13 @@
 package com.example.backend.security.payload.response;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class MessageResponse {
 
+    // Getter and Setter
     private String message;
 
     // No-args constructor
@@ -10,15 +16,6 @@ public class MessageResponse {
 
     // All-args constructor
     public MessageResponse(String message) {
-        this.message = message;
-    }
-
-    // Getter and Setter
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
         this.message = message;
     }
 

@@ -45,7 +45,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
                 var authorities = roles.stream()
                         .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+                        .toList();
 
                 UserDetailsImpl userDetails = new UserDetailsImpl(
                         null, // userId not needed here

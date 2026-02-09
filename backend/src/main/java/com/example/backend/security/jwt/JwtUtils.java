@@ -20,10 +20,10 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtils {
 
-    @Value("${toyandbooklibapp.jwtSecret}")
+    @Value("${backend.jwtSecret}")
     private String jwtSecret;
 
-    @Value("${toyandbooklibapp.jwtExpirationMs}")
+    @Value("${backend.jwtExpirationMs}")
     private int jwtExpirationMs;
 
     public String generateJwtToken(Authentication authentication) {
@@ -34,7 +34,7 @@ public class JwtUtils {
                 .claim("accountId", userPrincipal.getAccountId())
                 .claim("roles", userPrincipal.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.toList()))
+                        .toList())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS512)

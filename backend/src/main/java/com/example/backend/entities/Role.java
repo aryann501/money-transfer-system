@@ -10,7 +10,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "roles")
 public class Role {
@@ -35,23 +39,6 @@ public class Role {
 
     // Custom constructor (roleName only)
     public Role(ERole roleName) {
-        this.roleName = roleName;
-    }
-
-    // Getters and Setters
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public ERole getRoleName() {
-        return roleName;
-    }
-
-    public void setRoleName(ERole roleName) {
         this.roleName = roleName;
     }
 

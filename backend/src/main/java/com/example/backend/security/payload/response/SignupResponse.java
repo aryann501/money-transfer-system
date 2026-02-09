@@ -1,11 +1,14 @@
 package com.example.backend.security.payload.response;
 
+import lombok.Getter;
+
+@Getter
 public class SignupResponse {
-    private Long userId;
-    private String username;
-    private String accountId;
-    private String holderName;
-    private Double balance;
+    private final Long userId;
+    private final String username;
+    private final String accountId;
+    private final String holderName;
+    private final Double balance;
 
     public SignupResponse(Long userId, String username, String accountId, String holderName, Double balance) {
         this.userId = userId;
@@ -15,9 +18,4 @@ public class SignupResponse {
         this.balance = balance;
     }
 
-    public Long getUserId() { return userId; }
-    public String getUsername() { return username; }
-    public String getAccountId() { return accountId; }
-    public String getHolderName() { return holderName; }
-    public Double getBalance() { return balance; }
 }

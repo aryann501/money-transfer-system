@@ -97,16 +97,9 @@ public class AuthController {
 
         // Create Account
         Account account = new Account();
-<<<<<<< HEAD
-        AccountService acc = new AccountServiceImpl();
         account.setBalance(signUpRequest.getMinBalance());
         account.setHolderName(signUpRequest.getHolderName()); // separate from username
         account.setStatus(AccountStatus.ACTIVE);
-=======
-        account.setBalance(0.0);
-        account.setHolderName(signUpRequest.getUsername());
-        account.setStatus(AccountStatus.valueOf("ACTIVE"));
->>>>>>> f8e4805 (Added proper unit Test cases with 93% code coverage from Jacoco)
         account.setVersion(1);
         account.setAccountId(accountService.generateAccountId());
         account.setLastUpdated(LocalDateTime.now());
