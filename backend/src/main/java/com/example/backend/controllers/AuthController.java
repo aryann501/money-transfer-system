@@ -17,15 +17,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.backend.enums.ERole;
 import com.example.backend.entities.Role;
 import com.example.backend.entities.UserEntity;
+import com.example.backend.exceptions.InsufficientBalanceException;
 import com.example.backend.repositories.RoleRepository;
 import com.example.backend.repositories.UserRepository;
 import com.example.backend.security.jwt.JwtUtils;
@@ -33,10 +30,10 @@ import com.example.backend.security.payload.request.LoginRequest;
 import com.example.backend.security.payload.request.SignupRequest;
 import com.example.backend.security.payload.response.JwtResponse;
 import com.example.backend.security.payload.response.MessageResponse;
+import com.example.backend.security.payload.response.SignupResponse;
 import com.example.backend.security.service.UserDetailsImpl;
 
 import jakarta.validation.Valid;
-
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -59,7 +56,6 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
                         loginRequest.getPassword()));
@@ -86,24 +82,30 @@ public class AuthController {
                     .body(new MessageResponse("Error: Username is already taken!"));
         }
 
+        // Enforce minimum balance
+        if (signUpRequest.getMinBalance() == null || signUpRequest.getMinBalance() < 1000.0) {
+            throw new InsufficientBalanceException("Minimum balance must be at least 1000");
+        }
+
         // Create User
         UserEntity user = new UserEntity(
                 signUpRequest.getUsername(),
                 encoder.encode(signUpRequest.getPassword())
         );
 
+        // Create Account
         Account account = new Account();
         AccountService acc = new AccountServiceImpl();
-        account.setBalance(0.0);
-        account.setHolderName(signUpRequest.getUsername());
-        account.setStatus(AccountStatus.valueOf("ACTIVE"));
+        account.setBalance(signUpRequest.getMinBalance());
+        account.setHolderName(signUpRequest.getHolderName()); // separate from username
+        account.setStatus(AccountStatus.ACTIVE);
         account.setVersion(1);
         account.setAccountId(acc.generateAccountId());
         account.setLastUpdated(LocalDateTime.now());
 
         user.setAccount(account);
 
-        // Roles logic (same as yours)
+        // Roles logic
         Set<String> strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
 
@@ -130,6 +132,15 @@ public class AuthController {
         user.setRoles(roles);
         userRepository.save(user);
 
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        // Return DTO with IDs and account info
+        return ResponseEntity.ok(
+                new SignupResponse(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getAccount().getAccountId(),
+                        user.getAccount().getHolderName(),
+                        user.getAccount().getBalance()
+                )
+        );
     }
 }

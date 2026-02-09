@@ -2,33 +2,90 @@ package com.example.backend.security.payload.response;
 
 import java.util.List;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.ToString.Exclude;
-
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
 public class JwtResponse {
+
     private String accessToken;
     private String tokenType = "Bearer";
     private Long id;
     private String username;
-    @Exclude
     private List<String> roles;
 
+    // No-args constructor
+    public JwtResponse() {
+    }
+
+    // All-args constructor
+    public JwtResponse(String accessToken, String tokenType, Long id, String username, List<String> roles) {
+        this.accessToken = accessToken;
+        this.tokenType = tokenType;
+        this.id = id;
+        this.username = username;
+        this.roles = roles;
+    }
+
+    // Custom constructor (without tokenType, defaults to "Bearer")
     public JwtResponse(String accessToken, Long id, String username, List<String> roles) {
         this.accessToken = accessToken;
         this.id = id;
         this.username = username;
         this.roles = roles;
     }
-    public String getToken(){
+
+    // Getters and Setters
+    public String getAccessToken() {
         return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public String getTokenType() {
+        return tokenType;
+    }
+
+    public void setTokenType(String tokenType) {
+        this.tokenType = tokenType;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
+
+    // Convenience method
+    public String getToken() {
+        return accessToken;
+    }
+
+    // toString method
+    @Override
+    public String toString() {
+        return "JwtResponse{" +
+                "accessToken='" + accessToken + '\'' +
+                ", tokenType='" + tokenType + '\'' +
+                ", id=" + id +
+                ", username='" + username + '\'' +
+                ", roles=" + roles +
+                '}';
     }
 }

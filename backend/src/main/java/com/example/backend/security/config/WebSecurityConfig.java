@@ -9,11 +9,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -21,7 +21,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity // enables @PreAuthorize in controllers
 public class WebSecurityConfig {
+
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
@@ -33,15 +35,11 @@ public class WebSecurityConfig {
         return new AuthTokenFilter();
     }
 
-
-
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
-
         return authProvider;
     }
 
@@ -55,26 +53,45 @@ public class WebSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    public final static String[] PUBLIC_REQUEST_MATCHERS = { "/api/test/all", "/api/v1/transfers", "/api/auth/**", "/api-docs/**", "/swagger-ui/**","/v3/api-docs/**" };
+    // Removed role hierarchy so ADMIN does not inherit USER
+    // Each role is now independent
+
+    private static final String[] PUBLIC_ENDPOINTS = {
+            "/api/test/all",
+            "/api/auth/**",
+            "/api-docs/**",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-resources/**"
+    };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        //http.cors(AbstractHttpConfigurer :: disable).csrf(AbstractHttpConfigurer::disable)
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers(PUBLIC_REQUEST_MATCHERS).permitAll()
-                        // ADMIN ONLY
-                        .requestMatchers("/api/v1/accounts/{id}").hasRole("ADMIN")
-                        // USER OR ADMIN
-                        .requestMatchers("/api/v1/accounts/**").authenticated()
+                        // Public endpoints
+                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+
+                        // User-only endpoints
+                        .requestMatchers("/api/v1/accounts/my-details").hasRole("USER")
+                        .requestMatchers("/api/v1/accounts/balance").hasRole("USER")
+                        .requestMatchers("/api/v1/accounts/my-transactions").hasRole("USER")
+                        .requestMatchers("/api/v1/transfers/user").hasRole("USER")
                         .requestMatchers("/api/test/user").hasRole("USER")
+
+                        // Admin-only endpoints
+                        .requestMatchers("/api/v1/transfers/admin").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/accounts/*").hasRole("ADMIN")
                         .requestMatchers("/api/test/admin").hasRole("ADMIN")
+
+                        // Everything else requires authentication
+                        .anyRequest().authenticated()
                 )
-                //.anyRequest().authenticated())http://localhost:8080/api/test/
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 }

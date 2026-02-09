@@ -1,11 +1,15 @@
 package com.example.backend.controllers;
 
+import com.example.backend.dtos.UserTransferRequest;
 import com.example.backend.dtos.TransactionResponse;
-import com.example.backend.services.TransferService;
 import com.example.backend.exceptions.*;
+import com.example.backend.security.service.UserDetailsImpl;
+import com.example.backend.services.TransferService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin("*")
@@ -16,19 +20,23 @@ public class TransactionController {
     @Autowired
     private TransferService transferService;
 
-    // Execute fund transfer
-    // POST http://localhost:8080/api/v1/transfers
-    @PostMapping
-    public ResponseEntity<TransactionResponse> transfer(
-            @RequestParam String fromAccountId,
-            @RequestParam String toAccountId,
-            @RequestParam Double amount,
-            @RequestParam String idempotencyKey
+    // USER endpoint: only USER role can transfer (admins excluded)
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/user")
+    public ResponseEntity<TransactionResponse> transferAsUser(
+            @RequestBody UserTransferRequest request
     ) throws AccountNotFoundException, AccountNotActiveException,
             InsufficientBalanceException, DuplicateTransferException {
 
-        TransactionResponse res = transferService.transfer(fromAccountId, toAccountId, amount, idempotencyKey);
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String fromAccountId = userDetails.getAccountId(); // always user's own account
+
+        TransactionResponse res = transferService.transfer(
+                fromAccountId,
+                request.getToAccountId(),
+                request.getAmount(),
+                request.getIdempotencyKey()
+        );
         return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
 }
-

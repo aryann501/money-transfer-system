@@ -27,10 +27,9 @@ public class TransferServiceImpl implements TransferService {
             throws AccountNotFoundException, AccountNotActiveException,
             InsufficientBalanceException, DuplicateTransferException {
 
-        // Initialize transaction status as SUCCESS
         TransactionStatus transactionStatus = TransactionStatus.SUCCESS;
+        String failureReason = null;
 
-        // Fetch the sender and receiver accounts
         Account fromAccount = accountRepository.findByAccountId(fromAccountId)
                 .orElseThrow(() -> new AccountNotFoundException("Sender account not found: " + fromAccountId));
 
@@ -38,7 +37,6 @@ public class TransferServiceImpl implements TransferService {
                 .orElseThrow(() -> new AccountNotFoundException("Receiver account not found: " + toAccountId));
 
         try {
-            // Check if both accounts are active
             if (fromAccount.getStatus() != AccountStatus.ACTIVE) {
                 throw new AccountNotActiveException("Sender account is not active");
             }
@@ -46,49 +44,44 @@ public class TransferServiceImpl implements TransferService {
                 throw new AccountNotActiveException("Receiver account is not active");
             }
 
-            // Check if sender has sufficient balance
             if (fromAccount.getBalance() < amount) {
                 throw new InsufficientBalanceException("Insufficient balance in sender account");
             }
 
-            // Check if the transaction with the given idempotency key already exists
             if (transactionLogRepository.findByIdempotencyKey(idempotencyKey) != null) {
                 throw new DuplicateTransferException("Duplicate transfer detected with idempotency key: " + idempotencyKey);
             }
 
-            // Execute the transfer
             fromAccount.setBalance(fromAccount.getBalance() - amount);
             toAccount.setBalance(toAccount.getBalance() + amount);
 
-            // Save updated account balances
             accountRepository.save(fromAccount);
             accountRepository.save(toAccount);
 
         } catch (Exception e) {
-            // If any exception occurs, set the status to FAILED
             transactionStatus = TransactionStatus.FAILED;
+            failureReason = e.getMessage();  // capture reason
         }
 
-        // Log the transaction, whether it succeeded or failed
         TransactionLog log = new TransactionLog();
         log.setFromAccount(fromAccount);
         log.setToAccount(toAccount);
         log.setAmount(amount);
-        log.setStatus(transactionStatus);  // Set dynamic status (SUCCESS/FAILED)
+        log.setStatus(transactionStatus);
+        log.setFailureReason(failureReason); // set failure reason
         log.setIdempotencyKey(idempotencyKey);
         log.setCreatedOn(LocalDateTime.now());
 
-        // Save the transaction log to the database
         transactionLogRepository.save(log);
 
-        // Return a simplified response with transaction details and status
         TransactionResponse response = new TransactionResponse();
         response.setFromAccountId(fromAccount.getAccountId());
         response.setFromAccountHolderName(fromAccount.getHolderName());
         response.setToAccountId(toAccount.getAccountId());
         response.setToAccountHolderName(toAccount.getHolderName());
         response.setAmount(amount);
-        response.setStatus(transactionStatus.name());  // Use enum's string value (SUCCESS/FAILED)
+        response.setStatus(transactionStatus.name());
+        response.setFailureReason(failureReason); // include in response
         response.setCreatedOn(LocalDateTime.now());
 
         return response;

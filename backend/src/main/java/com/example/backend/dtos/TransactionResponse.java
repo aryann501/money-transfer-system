@@ -9,7 +9,8 @@ public class TransactionResponse {
     private String toAccountId;
     private String toAccountHolderName;
     private Double amount;
-    private String status;  // SUCCESS or FAILED
+    private String status;
+    private String failureReason;
     private LocalDateTime createdOn;
 
     // Getters and Setters
@@ -61,6 +62,14 @@ public class TransactionResponse {
         this.status = status;
     }
 
+    public String getFailureReason() {
+        return failureReason;
+    }
+
+    public void setFailureReason(String failureReason) {
+        this.failureReason = failureReason;
+    }
+
     public LocalDateTime getCreatedOn() {
         return createdOn;
     }
@@ -78,8 +87,8 @@ public class TransactionResponse {
                 ", toAccountHolderName='" + toAccountHolderName + '\'' +
                 ", amount=" + amount +
                 ", status='" + status + '\'' +
+                ", failureReason='" + failureReason + '\'' +
                 ", createdOn=" + createdOn +
                 '}';
     }
 }
-

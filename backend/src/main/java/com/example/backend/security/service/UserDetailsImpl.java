@@ -1,53 +1,50 @@
 package com.example.backend.security.service;
 
+import com.example.backend.entities.UserEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.example.backend.entities.UserEntity;
-
-
 
 public class UserDetailsImpl implements UserDetails {
-    private static final long serialVersionUID = 1L;
-
     private Long id;
-
     private String username;
-
+    private String password;
+    private Collection<? extends GrantedAuthority> authorities;
     private String accountId;
 
-    @JsonIgnore
-    private String password;
-
-    private Collection<? extends GrantedAuthority> authorities;
-
-    public UserDetailsImpl(Long id, String username, String password, String accountId,
-                           Collection<? extends GrantedAuthority> authorities) {
+    public UserDetailsImpl(Long id, String username, String password,
+                           Collection<? extends GrantedAuthority> authorities,
+                           String accountId) {
         this.id = id;
         this.username = username;
-        this.accountId = accountId;
         this.password = password;
         this.authorities = authorities;
+        this.accountId = accountId;
     }
 
     public static UserDetailsImpl build(UserEntity user) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRoleName().name()))
-                .collect(Collectors.toList());
+                .map(role -> (GrantedAuthority) () -> role.getRoleName().name())
+                .toList();
 
         return new UserDetailsImpl(
                 user.getId(),
                 user.getUsername(),
                 user.getPassword(),
-                user.getAccount().getAccountId(),
-                authorities);
+                authorities,
+                user.getAccount() != null ? user.getAccount().getAccountId() : null
+        );
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getAccountId() {
+        return accountId;
     }
 
     @Override
@@ -55,37 +52,9 @@ public class UserDetailsImpl implements UserDetails {
         return authorities;
     }
 
-    public Long getId() {
-        return id;
-    }
-
     @Override
     public String getPassword() {
         return password;
-    }
-
-    public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
-        this.authorities = authorities;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(String accountId) {
-        this.accountId = accountId;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     @Override
@@ -115,11 +84,14 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        UserDetailsImpl user = (UserDetailsImpl) o;
-        return Objects.equals(id, user.id);
+        if (this == o) return true;
+        if (!(o instanceof UserDetailsImpl)) return false;
+        UserDetailsImpl that = (UserDetailsImpl) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

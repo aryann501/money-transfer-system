@@ -27,6 +27,7 @@ public class AccountServiceImpl implements AccountService {
         AccountDTO accountDTO = new AccountDTO();
         accountDTO.setId(account.getId());
         accountDTO.setHolderName(account.getHolderName());
+        accountDTO.setAccountId(account.getAccountId());
         accountDTO.setBalance(account.getBalance());
         accountDTO.setStatus(account.getStatus().name()); // Assuming AccountStatus is an Enum
         accountDTO.setVersion(account.getVersion());
