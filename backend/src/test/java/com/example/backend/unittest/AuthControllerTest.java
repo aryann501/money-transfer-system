@@ -86,8 +86,8 @@ class AuthControllerTest {
 
         ResponseEntity<?> response = authController.authenticateUser(loginRequest);
 
-        assertEquals(200, response.getStatusCodeValue());
-        assertTrue(response.getBody() instanceof JwtResponse);
+        assertEquals(200, response.getStatusCode().value());
+        assertInstanceOf(JwtResponse.class, response.getBody());
         JwtResponse jwtResponse = (JwtResponse) response.getBody();
         assertEquals("mock-jwt-token", jwtResponse.getToken());
         assertEquals("username", jwtResponse.getUsername());
@@ -125,8 +125,8 @@ class AuthControllerTest {
 
         ResponseEntity<?> response = authController.registerUser(signUpRequest);
 
-        assertEquals(200, response.getStatusCodeValue());
-        assertTrue(response.getBody() instanceof SignupResponse);
+        assertEquals(200, response.getStatusCode().value());
+        assertInstanceOf(SignupResponse.class, response.getBody());
         SignupResponse signupResponse = (SignupResponse) response.getBody();
         assertEquals("newuser", signupResponse.getUsername());
         assertEquals("John Doe", signupResponse.getHolderName());
@@ -148,8 +148,8 @@ class AuthControllerTest {
 
         ResponseEntity<?> response = authController.registerUser(signUpRequest);
 
-        assertEquals(400, response.getStatusCodeValue());
-        assertTrue(response.getBody() instanceof MessageResponse);
+        assertEquals(400, response.getStatusCode().value());
+        assertInstanceOf(MessageResponse.class, response.getBody());
         MessageResponse messageResponse = (MessageResponse) response.getBody();
         assertEquals("Error: Username is already taken!", messageResponse.getMessage());
     }
@@ -209,8 +209,8 @@ class AuthControllerTest {
         ResponseEntity<?> response = authController.registerUser(signUpRequest);
 
         // Assert
-        assertEquals(200, response.getStatusCodeValue());
-        assertTrue(response.getBody() instanceof SignupResponse);
+        assertEquals(200, response.getStatusCode().value());
+        assertInstanceOf(SignupResponse.class, response.getBody());
         verify(userRepository, times(1)).save(any(UserEntity.class));
     }
 
@@ -234,8 +234,8 @@ class AuthControllerTest {
         ResponseEntity<?> response = authController.registerUser(signUpRequest);
 
         // Assert
-        assertEquals(200, response.getStatusCodeValue());
-        assertTrue(response.getBody() instanceof SignupResponse);
+        assertEquals(200, response.getStatusCode().value());
+        assertInstanceOf(SignupResponse.class, response.getBody());
         verify(roleRepository, times(1)).findByRoleName(ERole.ROLE_USER);
         verify(userRepository, times(1)).save(any(UserEntity.class));
     }

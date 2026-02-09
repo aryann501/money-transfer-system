@@ -4,7 +4,6 @@ import com.example.backend.dtos.AccountDTO;
 import com.example.backend.dtos.TransactionResponse;
 import com.example.backend.entities.Account;
 import com.example.backend.entities.TransactionLog;
-import com.example.backend.entities.UserEntity;
 import com.example.backend.enums.AccountStatus;
 import com.example.backend.enums.TransactionStatus;
 import com.example.backend.exceptions.AccountNotFoundException;
@@ -17,8 +16,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
