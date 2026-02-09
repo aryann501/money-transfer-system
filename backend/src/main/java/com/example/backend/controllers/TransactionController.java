@@ -5,7 +5,6 @@ import com.example.backend.dtos.TransactionResponse;
 import com.example.backend.exceptions.*;
 import com.example.backend.security.service.UserDetailsImpl;
 import com.example.backend.services.TransferService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,9 +15,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/transfers")
 public class TransactionController {
-
-    @Autowired
-    private TransferService transferService;
+    private final TransferService transferService;
+    public TransactionController(TransferService transferService) {
+        this.transferService = transferService;
+    }
 
     // USER endpoint: only USER role can transfer (admins excluded)
     @PreAuthorize("hasRole('USER')")

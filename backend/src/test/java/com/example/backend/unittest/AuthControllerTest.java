@@ -22,10 +22,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.backend.controllers.AuthController;
-import com.example.backend.entities.Account;
 import com.example.backend.entities.Role;
 import com.example.backend.entities.UserEntity;
-import com.example.backend.enums.AccountStatus;
 import com.example.backend.enums.ERole;
 import com.example.backend.exceptions.InsufficientBalanceException;
 import com.example.backend.repositories.RoleRepository;
@@ -128,9 +126,9 @@ class AuthControllerTest {
         assertEquals(200, response.getStatusCode().value());
         assertInstanceOf(SignupResponse.class, response.getBody());
         SignupResponse signupResponse = (SignupResponse) response.getBody();
-        assertEquals("newuser", signupResponse.getUsername());
-        assertEquals("John Doe", signupResponse.getHolderName());
-        assertEquals(1500.0, signupResponse.getBalance());
+        assertEquals("newuser", signupResponse.username());
+        assertEquals("John Doe", signupResponse.holderName());
+        assertEquals(1500.0, signupResponse.balance());
 
         verify(accountService, times(1)).generateAccountId();
         verify(userRepository, times(1)).save(any(UserEntity.class));

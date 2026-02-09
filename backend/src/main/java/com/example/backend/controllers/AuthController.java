@@ -4,16 +4,16 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.example.backend.entities.Account;
 import com.example.backend.enums.AccountStatus;
+import com.example.backend.exceptions.UsernameAlreadyExistsException;
 import com.example.backend.services.AccountService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +28,6 @@ import com.example.backend.security.jwt.JwtUtils;
 import com.example.backend.security.payload.request.LoginRequest;
 import com.example.backend.security.payload.request.SignupRequest;
 import com.example.backend.security.payload.response.JwtResponse;
-import com.example.backend.security.payload.response.MessageResponse;
 import com.example.backend.security.payload.response.SignupResponse;
 import com.example.backend.security.service.UserDetailsImpl;
 
@@ -38,26 +37,31 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-    @Autowired
-    AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder encoder;
+    private final JwtUtils jwtUtils;
+    private final AccountService accountService;
+    private static final String ROLE_NOT_FOUND_ERROR = "Error: Role is not found.";
 
-    @Autowired
-    UserRepository userRepository;
+    public AuthController(AuthenticationManager authenticationManager,
+                          UserRepository userRepository,
+                          RoleRepository roleRepository,
+                          PasswordEncoder encoder,
+                          JwtUtils jwtUtils,
+                          AccountService accountService) {
 
-    @Autowired
-    RoleRepository roleRepository;
-
-    @Autowired
-    PasswordEncoder encoder;
-
-    @Autowired
-    JwtUtils jwtUtils;
-
-    @Autowired
-    AccountService accountService;
+        this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.encoder = encoder;
+        this.jwtUtils = jwtUtils;
+        this.accountService = accountService;
+    }
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<JwtResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
                         loginRequest.getPassword()));
@@ -67,8 +71,8 @@ public class AuthController {
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
+                .map(GrantedAuthority::getAuthority)
+                .toList();
 
         return ResponseEntity.ok(new JwtResponse(jwt,
                 userDetails.getId(),
@@ -77,11 +81,10 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+    public ResponseEntity<SignupResponse> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
 
-        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-            return ResponseEntity.badRequest()
-                    .body(new MessageResponse("Error: Username is already taken!"));
+        if (Boolean.TRUE.equals(userRepository.existsByUsername(signUpRequest.getUsername()))) {
+            throw new UsernameAlreadyExistsException("Error: Username is already taken!");
         }
 
         // Enforce minimum balance
@@ -112,20 +115,18 @@ public class AuthController {
 
         if (strRoles == null) {
             Role userRole = roleRepository.findByRoleName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    .orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND_ERROR));
             roles.add(userRole);
         } else {
             strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByRoleName(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(adminRole);
-                        break;
-                    default:
-                        Role userRole = roleRepository.findByRoleName(ERole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(userRole);
+                if (role.equals("admin")) {
+                    Role adminRole = roleRepository.findByRoleName(ERole.ROLE_ADMIN)
+                            .orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND_ERROR));
+                    roles.add(adminRole);
+                } else {
+                    Role userRole = roleRepository.findByRoleName(ERole.ROLE_USER)
+                            .orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND_ERROR));
+                    roles.add(userRole);
                 }
             });
         }

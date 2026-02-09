@@ -1,7 +1,9 @@
 package com.example.backend.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashSet;
@@ -10,6 +12,8 @@ import java.util.Set;
 @Setter
 @Getter
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "users")
 public class UserEntity {
 
@@ -36,26 +40,11 @@ public class UserEntity {
     )
     private Set<Role> roles = new HashSet<>();
 
-    // No-args constructor (required by JPA)
-    public UserEntity() {
-    }
-
-    // All-args constructor
-    public UserEntity(Long id, String username, String password, Account account, Set<Role> roles) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.account = account;
-        this.roles = roles;
-    }
-
-    // Custom constructor (username + password only)
     public UserEntity(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
-    // toString method (excluding roles to avoid lazy loading issues)
     @Override
     public String toString() {
         return "UserEntity{" +

@@ -8,7 +8,6 @@ import com.example.backend.enums.TransactionStatus;
 import com.example.backend.exceptions.*;
 import com.example.backend.repositories.AccountRepository;
 import com.example.backend.repositories.TransactionLogRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,63 +15,127 @@ import java.time.LocalDateTime;
 @Service
 public class TransferServiceImpl implements TransferService {
 
-    @Autowired
-    private AccountRepository accountRepository;
+    private static final String SENDER_NOT_FOUND = "Sender account not found: %s";
+    private static final String RECEIVER_NOT_FOUND = "Receiver account not found: %s";
+    private static final String SENDER_NOT_ACTIVE = "Sender account is not active";
+    private static final String RECEIVER_NOT_ACTIVE = "Receiver account is not active";
+    private static final String INSUFFICIENT_BALANCE = "Insufficient balance in sender account";
+    private static final String DUPLICATE_TRANSFER = "Duplicate transfer detected with idempotency key: %s";
 
-    @Autowired
-    private TransactionLogRepository transactionLogRepository;
+    private final AccountRepository accountRepository;
+    private final TransactionLogRepository transactionLogRepository;
+
+    public TransferServiceImpl(AccountRepository accountRepository,
+                               TransactionLogRepository transactionLogRepository) {
+        this.accountRepository = accountRepository;
+        this.transactionLogRepository = transactionLogRepository;
+    }
 
     @Override
-    public TransactionResponse transfer(String fromAccountId, String toAccountId, Double amount, String idempotencyKey)
-            throws AccountNotFoundException, AccountNotActiveException,
-            InsufficientBalanceException, DuplicateTransferException {
+    public TransactionResponse transfer(String fromAccountId,
+                                        String toAccountId,
+                                        Double amount,
+                                        String idempotencyKey)
+            throws AccountNotFoundException,
+            AccountNotActiveException,
+            InsufficientBalanceException,
+            DuplicateTransferException {
 
         TransactionStatus transactionStatus = TransactionStatus.SUCCESS;
         String failureReason = null;
+        LocalDateTime now = LocalDateTime.now();
 
         Account fromAccount = accountRepository.findByAccountId(fromAccountId)
-                .orElseThrow(() -> new AccountNotFoundException("Sender account not found: " + fromAccountId));
+                .orElseThrow(() -> new AccountNotFoundException(
+                        String.format(SENDER_NOT_FOUND, fromAccountId)));
 
         Account toAccount = accountRepository.findByAccountId(toAccountId)
-                .orElseThrow(() -> new AccountNotFoundException("Receiver account not found: " + toAccountId));
+                .orElseThrow(() -> new AccountNotFoundException(
+                        String.format(RECEIVER_NOT_FOUND, toAccountId)));
 
         try {
-            if (fromAccount.getStatus() != AccountStatus.ACTIVE) {
-                throw new AccountNotActiveException("Sender account is not active");
-            }
-            if (toAccount.getStatus() != AccountStatus.ACTIVE) {
-                throw new AccountNotActiveException("Receiver account is not active");
-            }
+            validateAccounts(fromAccount, toAccount);
+            validateBalance(fromAccount, amount);
+            validateIdempotency(idempotencyKey);
 
-            if (fromAccount.getBalance() < amount) {
-                throw new InsufficientBalanceException("Insufficient balance in sender account");
-            }
+            performTransfer(fromAccount, toAccount, amount);
 
-            if (transactionLogRepository.findByIdempotencyKey(idempotencyKey) != null) {
-                throw new DuplicateTransferException("Duplicate transfer detected with idempotency key: " + idempotencyKey);
-            }
+        } catch (AccountNotActiveException |
+                 InsufficientBalanceException |
+                 DuplicateTransferException e) {
 
-            fromAccount.setBalance(fromAccount.getBalance() - amount);
-            toAccount.setBalance(toAccount.getBalance() + amount);
-
-            accountRepository.save(fromAccount);
-            accountRepository.save(toAccount);
-
-        } catch (Exception e) {
             transactionStatus = TransactionStatus.FAILED;
-            failureReason = e.getMessage();  // capture reason
+            failureReason = e.getMessage();
         }
+
+        TransactionLog log = buildTransactionLog(
+                fromAccount, toAccount, amount,
+                transactionStatus, failureReason,
+                idempotencyKey, now
+        );
+
+        transactionLogRepository.save(log);
+
+        return buildResponse(fromAccount, toAccount, amount,
+                transactionStatus, failureReason, now);
+    }
+
+    private void validateAccounts(Account fromAccount, Account toAccount) {
+        if (fromAccount.getStatus() != AccountStatus.ACTIVE) {
+            throw new AccountNotActiveException(SENDER_NOT_ACTIVE);
+        }
+        if (toAccount.getStatus() != AccountStatus.ACTIVE) {
+            throw new AccountNotActiveException(RECEIVER_NOT_ACTIVE);
+        }
+    }
+
+    private void validateBalance(Account fromAccount, Double amount) {
+        if (fromAccount.getBalance() < amount) {
+            throw new InsufficientBalanceException(INSUFFICIENT_BALANCE);
+        }
+    }
+
+    private void validateIdempotency(String idempotencyKey) {
+        if (transactionLogRepository.findByIdempotencyKey(idempotencyKey) != null) {
+            throw new DuplicateTransferException(
+                    String.format(DUPLICATE_TRANSFER, idempotencyKey));
+        }
+    }
+
+    private void performTransfer(Account fromAccount, Account toAccount, Double amount) {
+        fromAccount.setBalance(fromAccount.getBalance() - amount);
+        toAccount.setBalance(toAccount.getBalance() + amount);
+
+        accountRepository.save(fromAccount);
+        accountRepository.save(toAccount);
+    }
+
+    private TransactionLog buildTransactionLog(Account fromAccount,
+                                               Account toAccount,
+                                               Double amount,
+                                               TransactionStatus status,
+                                               String failureReason,
+                                               String idempotencyKey,
+                                               LocalDateTime now) {
 
         TransactionLog log = new TransactionLog();
         log.setFromAccount(fromAccount);
         log.setToAccount(toAccount);
         log.setAmount(amount);
-        log.setStatus(transactionStatus);
-        log.setFailureReason(failureReason); // set failure reason
+        log.setStatus(status);
+        log.setFailureReason(failureReason);
         log.setIdempotencyKey(idempotencyKey);
-        log.setCreatedOn(LocalDateTime.now());
+        log.setCreatedOn(now);
 
-        transactionLogRepository.save(log);
+        return log;
+    }
+
+    private TransactionResponse buildResponse(Account fromAccount,
+                                              Account toAccount,
+                                              Double amount,
+                                              TransactionStatus status,
+                                              String failureReason,
+                                              LocalDateTime now) {
 
         TransactionResponse response = new TransactionResponse();
         response.setFromAccountId(fromAccount.getAccountId());
@@ -80,9 +143,9 @@ public class TransferServiceImpl implements TransferService {
         response.setToAccountId(toAccount.getAccountId());
         response.setToAccountHolderName(toAccount.getHolderName());
         response.setAmount(amount);
-        response.setStatus(transactionStatus.name());
-        response.setFailureReason(failureReason); // include in response
-        response.setCreatedOn(LocalDateTime.now());
+        response.setStatus(status.name());
+        response.setFailureReason(failureReason);
+        response.setCreatedOn(now);
 
         return response;
     }

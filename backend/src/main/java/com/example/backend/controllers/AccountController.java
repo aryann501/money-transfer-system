@@ -5,10 +5,10 @@ import com.example.backend.dtos.TransactionResponse;
 import com.example.backend.exceptions.AccountNotFoundException;
 import com.example.backend.security.service.UserDetailsImpl;
 import com.example.backend.services.AccountService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -24,50 +24,62 @@ public class AccountController {
 
     private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
-    @Autowired
-    private AccountService accountService;
+    private final AccountService accountService;
+    public AccountController(AccountService accountService) {
+        this.accountService = accountService;
+    }
 
-    // --- ADMIN ENDPOINTS ---
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
-    public ResponseEntity<?> getAccount(@PathVariable String id) {
-        return ResponseEntity.ok(accountService.getAccount(id));
+    public ResponseEntity<AccountDTO> getAccount(@PathVariable String id) {
+        AccountDTO account = accountService.getAccount(id);
+        return ResponseEntity.ok(account);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}/transactions")
-    public ResponseEntity<List<TransactionResponse>> getTransactionsById(@PathVariable String id) throws AccountNotFoundException {
+    public ResponseEntity<List<TransactionResponse>> getTransactionsById(
+            @PathVariable String id) throws AccountNotFoundException {
+
         List<TransactionResponse> transactions = accountService.getTransactions(id);
-        return new ResponseEntity<>(transactions, HttpStatus.OK);
+        return ResponseEntity.ok(transactions);
     }
 
-    // --- USER ENDPOINTS (accessible to USER only) ---
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/my-details")
-    public ResponseEntity<?> getMyAccount() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        logger.info("User: {}, Roles: {}", auth.getName(), auth.getAuthorities());
-        UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
-        return ResponseEntity.ok(accountService.getAccount(userDetails.getAccountId()));
+    public ResponseEntity<AccountDTO> getMyAccount() {
+
+        UserDetailsImpl userDetails = getCurrentUser();
+        AccountDTO account = accountService.getAccount(userDetails.getAccountId());
+
+        return ResponseEntity.ok(account);
     }
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/balance")
-    public ResponseEntity<?> getMyBalance() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        logger.info("User: {}, Roles: {}", auth.getName(), auth.getAuthorities());
-        UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
+    public ResponseEntity<Double> getMyBalance() {
+
+        UserDetailsImpl userDetails = getCurrentUser();
         AccountDTO account = accountService.getAccount(userDetails.getAccountId());
+
         return ResponseEntity.ok(account.getBalance());
     }
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/my-transactions")
-    public ResponseEntity<List<TransactionResponse>> getMyTransactions() throws AccountNotFoundException {
+    public ResponseEntity<List<TransactionResponse>> getMyTransactions()
+            throws AccountNotFoundException {
+
+        UserDetailsImpl userDetails = getCurrentUser();
+        List<TransactionResponse> transactions =
+                accountService.getTransactions(userDetails.getAccountId());
+
+        return ResponseEntity.ok(transactions);
+    }
+
+    private UserDetailsImpl getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         logger.info("User: {}, Roles: {}", auth.getName(), auth.getAuthorities());
-        UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
-        List<TransactionResponse> transactions = accountService.getTransactions(userDetails.getAccountId());
-        return new ResponseEntity<>(transactions, HttpStatus.OK);
+        return (UserDetailsImpl) auth.getPrincipal();
     }
 }

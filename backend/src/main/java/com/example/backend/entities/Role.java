@@ -10,13 +10,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
+@AllArgsConstructor
 @Table(name = "roles")
+@NoArgsConstructor
 public class Role {
 
     @Id
@@ -27,22 +31,11 @@ public class Role {
     @Column(length = 20)
     private ERole roleName;
 
-    // No-args constructor
-    public Role() {
-    }
 
-    // All-args constructor
-    public Role(Integer id, ERole roleName) {
-        this.id = id;
-        this.roleName = roleName;
-    }
-
-    // Custom constructor (roleName only)
     public Role(ERole roleName) {
         this.roleName = roleName;
     }
 
-    // toString method
     @Override
     public String toString() {
         return "Role{" +

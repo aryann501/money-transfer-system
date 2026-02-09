@@ -1,23 +1,17 @@
 package com.example.backend.security.payload.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Setter
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class MessageResponse {
 
-    // Getter and Setter
     private String message;
-
-    // No-args constructor
-    public MessageResponse() {
-    }
-
-    // All-args constructor
-    public MessageResponse(String message) {
-        this.message = message;
-    }
 
     // toString method
     @Override

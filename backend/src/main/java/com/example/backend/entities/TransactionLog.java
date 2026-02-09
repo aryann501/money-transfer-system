@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Entity
-//@Setter
 public class TransactionLog {
 
     @Id

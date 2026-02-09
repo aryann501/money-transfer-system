@@ -4,9 +4,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import io.jsonwebtoken.io.Decoders;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -60,12 +57,19 @@ public class JwtUtils {
     }
 
     public List<String> getRolesFromJwtToken(String token) {
-        return (List<String>) Jwts.parserBuilder()
+        Object rolesObj = Jwts.parserBuilder()
                 .setSigningKey(getSignInKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .get("roles");
+
+        if (rolesObj instanceof List<?> list) {
+            return list.stream()
+                    .map(Object::toString)
+                    .toList();
+        }
+        return List.of();
     }
 
     public boolean validateJwtToken(String authToken) {

@@ -3,13 +3,17 @@ package com.example.backend.security.payload.request;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Set;
 
 @Setter
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class SignupRequest {
 
     @NotBlank
@@ -27,16 +31,6 @@ public class SignupRequest {
 
     @Min(1000)
     private Double minBalance;
-
-    public SignupRequest() {}
-
-    public SignupRequest(String username, Set<String> role, String password, String holderName, Double minBalance) {
-        this.username = username;
-        this.role = role;
-        this.password = password;
-        this.holderName = holderName;
-        this.minBalance = minBalance;
-    }
 
     @Override
     public String toString() {

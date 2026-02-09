@@ -26,7 +26,7 @@ public class SwaggerOpenApiConfig {
                 // setting global security
                 .security(List.of(new SecurityRequirement().addList(securitySchemeName)))
                 .info(new Info().title("SpringBoot API").description("Spring JWT Security application")
-                        .version("v0.0.1").license(new License().name("Apache 2.0").url("http://springdoc.org")))
+                        .version("v0.0.1").license(new License().name("Apache 2.0").url("https://springdoc.org")))
                 .externalDocs(new ExternalDocumentation().description("SpringBoot Wiki Documentation")
                         .url("https://springboot.wiki.github.org/docs"));
 
