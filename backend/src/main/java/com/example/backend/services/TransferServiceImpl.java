@@ -2,8 +2,10 @@ package com.example.backend.services;
 
 import com.example.backend.dtos.TransactionResponse;
 import com.example.backend.entities.Account;
+import com.example.backend.entities.TransactionDetails;
 import com.example.backend.entities.TransactionLog;
 import com.example.backend.enums.AccountStatus;
+import com.example.backend.enums.TransactionCategory;
 import com.example.backend.enums.TransactionStatus;
 import com.example.backend.exceptions.*;
 import com.example.backend.repositories.AccountRepository;
@@ -35,7 +37,9 @@ public class TransferServiceImpl implements TransferService {
     public TransactionResponse transfer(String fromAccountId,
                                         String toAccountId,
                                         Double amount,
-                                        String idempotencyKey)
+                                        String idempotencyKey,
+                                        String category,
+                                        String note)
             throws AccountNotFoundException,
             AccountNotActiveException,
             InsufficientBalanceException,
@@ -61,23 +65,26 @@ public class TransferServiceImpl implements TransferService {
             performTransfer(fromAccount, toAccount, amount);
 
         } catch (AccountNotActiveException |
-                 InsufficientBalanceException |
-                 DuplicateTransferException e) {
+                 InsufficientBalanceException e) {
 
             transactionStatus = TransactionStatus.FAILED;
             failureReason = e.getMessage();
         }
 
+        TransactionCategory categoryEnum = resolveCategory(category);
+
         TransactionLog log = buildTransactionLog(
                 fromAccount, toAccount, amount,
                 transactionStatus, failureReason,
-                idempotencyKey, now
+                idempotencyKey, now,
+                categoryEnum, note
         );
 
         transactionLogRepository.save(log);
 
         return buildResponse(fromAccount, toAccount, amount,
-                transactionStatus, failureReason, now);
+                transactionStatus, failureReason, now,
+                categoryEnum, note);
     }
 
     private void validateAccounts(Account fromAccount, Account toAccount) {
@@ -110,13 +117,26 @@ public class TransferServiceImpl implements TransferService {
         accountRepository.save(toAccount);
     }
 
+    private TransactionCategory resolveCategory(String category) {
+        if (category == null || category.isBlank()) {
+            return TransactionCategory.OTHER;
+        }
+        try {
+            return TransactionCategory.valueOf(category.trim().toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            return TransactionCategory.OTHER;
+        }
+    }
+
     private TransactionLog buildTransactionLog(Account fromAccount,
                                                Account toAccount,
                                                Double amount,
                                                TransactionStatus status,
                                                String failureReason,
                                                String idempotencyKey,
-                                               LocalDateTime now) {
+                                               LocalDateTime now,
+                                               TransactionCategory category,
+                                               String note) {
 
         TransactionLog log = new TransactionLog();
         log.setFromAccount(fromAccount);
@@ -127,6 +147,13 @@ public class TransferServiceImpl implements TransferService {
         log.setIdempotencyKey(idempotencyKey);
         log.setCreatedOn(now);
 
+        // attach details (separate table)
+        TransactionDetails details = new TransactionDetails();
+        details.setCategory(category);
+        details.setNote(note);
+        details.setTransactionLog(log);
+        log.setDetails(details);
+
         return log;
     }
 
@@ -135,7 +162,9 @@ public class TransferServiceImpl implements TransferService {
                                               Double amount,
                                               TransactionStatus status,
                                               String failureReason,
-                                              LocalDateTime now) {
+                                              LocalDateTime now,
+                                              TransactionCategory category,
+                                              String note) {
 
         TransactionResponse response = new TransactionResponse();
         response.setFromAccountId(fromAccount.getAccountId());
@@ -146,6 +175,8 @@ public class TransferServiceImpl implements TransferService {
         response.setStatus(status.name());
         response.setFailureReason(failureReason);
         response.setCreatedOn(now);
+        response.setCategory(category != null ? category.name() : null);
+        response.setNote(note);
 
         return response;
     }

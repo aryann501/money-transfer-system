@@ -33,6 +33,9 @@ public class TransactionLog {
 
     private LocalDateTime createdOn;
 
+    @OneToOne(mappedBy = "transactionLog", cascade = CascadeType.ALL, orphanRemoval = true)
+    private TransactionDetails details;
+
     // Getters
     public Long getId() {
         return id;
@@ -64,6 +67,10 @@ public class TransactionLog {
 
     public LocalDateTime getCreatedOn() {
         return createdOn;
+    }
+
+    public TransactionDetails getDetails() {
+        return details;
     }
 
     // Setters
@@ -99,6 +106,10 @@ public class TransactionLog {
         this.createdOn = createdOn;
     }
 
+    public void setDetails(TransactionDetails details) {
+        this.details = details;
+    }
+
     @Override
     public String toString() {
         return "TransactionLog{" +
@@ -113,3 +124,4 @@ public class TransactionLog {
                 '}';
     }
 }
+

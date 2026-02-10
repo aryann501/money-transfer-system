@@ -6,6 +6,10 @@ public class UserTransferRequest {
     private Double amount;
     private String idempotencyKey;
 
+    private String category;
+
+    private String note;
+
     // Getters
     public String getToAccountId() {
         return toAccountId;
@@ -17,6 +21,14 @@ public class UserTransferRequest {
 
     public String getIdempotencyKey() {
         return idempotencyKey;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getNote() {
+        return note;
     }
 
     // Setters
@@ -31,4 +43,13 @@ public class UserTransferRequest {
     public void setIdempotencyKey(String idempotencyKey) {
         this.idempotencyKey = idempotencyKey;
     }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
 }
+

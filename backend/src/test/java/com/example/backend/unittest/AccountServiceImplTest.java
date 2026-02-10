@@ -99,7 +99,7 @@ class AccountServiceImplTest {
     }
 
     @Test
-    void testGetTransactions_success() {
+    void testGetTransactions_success_populatesFields() {
         // Arrange
         String accountId = "ACC1234";
         Account account = new Account();
@@ -123,7 +123,7 @@ class AccountServiceImplTest {
         incoming.setAmount(50.0);
         incoming.setStatus(TransactionStatus.SUCCESS);
         incoming.setCreatedOn(LocalDateTime.now());
-        
+
         account.setOutgoingTransactions(List.of(outgoing));
         account.setIncomingTransactions(List.of(incoming));
 
@@ -135,6 +135,15 @@ class AccountServiceImplTest {
         // Assert
         assertNotNull(responses);
         assertEquals(2, responses.size());
+
+        TransactionResponse first = responses.get(0);
+        assertEquals("ACC1234", first.getFromAccountId());
+        assertEquals("John Doe", first.getFromAccountHolderName());
+        assertEquals("ACC5678", first.getToAccountId());
+        assertEquals("Jane Doe", first.getToAccountHolderName());
+        assertEquals(100.0, first.getAmount());
+        assertEquals(TransactionStatus.SUCCESS.name(), first.getStatus());
+        assertNotNull(first.getCreatedOn());
     }
     
     @Test

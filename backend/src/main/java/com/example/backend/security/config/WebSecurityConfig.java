@@ -19,12 +19,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class WebSecurityConfig {
-
+    private static final String ROLE_USER = "USER";
+    private static final String ROLE_ADMIN = "ADMIN";
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthEntryPointJwt unauthorizedHandler;
     private final JwtUtils jwtUtils;
@@ -79,20 +83,28 @@ public class WebSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http.csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(request -> {
+                    CorsConfiguration config = new CorsConfiguration();
+                    config.setAllowedOriginPatterns(List.of("*")); // allow all origins
+                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    config.setAllowedHeaders(List.of("*"));
+                    config.setAllowCredentials(true); // allow credentials
+                    return config;
+                }))
                 .authorizeHttpRequests(req -> req
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
 
                         // USER endpoints
-                        .requestMatchers("/api/v1/accounts/my-details").hasRole("USER")
-                        .requestMatchers("/api/v1/accounts/balance").hasRole("USER")
-                        .requestMatchers("/api/v1/accounts/my-transactions").hasRole("USER")
-                        .requestMatchers("/api/v1/transfers/user").hasRole("USER")
-                        .requestMatchers("/api/test/user").hasRole("USER")
+                        .requestMatchers("/api/v1/accounts/my-details").hasRole(ROLE_USER)
+                        .requestMatchers("/api/v1/accounts/balance").hasRole(ROLE_USER)
+                        .requestMatchers("/api/v1/accounts/my-transactions").hasRole(ROLE_USER)
+                        .requestMatchers("/api/v1/transfers/user").hasRole(ROLE_USER)
+                        .requestMatchers("/api/test/user").hasRole(ROLE_USER)
 
                         // ADMIN endpoints
-                        .requestMatchers("/api/v1/transfers/admin").hasRole("ADMIN")
-                        .requestMatchers("/api/v1/accounts/*").hasRole("ADMIN")
-                        .requestMatchers("/api/test/admin").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/transfers/admin").hasRole(ROLE_ADMIN)
+                        .requestMatchers("/api/v1/accounts/*").hasRole(ROLE_ADMIN)
+                        .requestMatchers("/api/test/admin").hasRole(ROLE_ADMIN)
 
                         .anyRequest().authenticated()
                 )

@@ -4,7 +4,9 @@ import com.example.backend.dtos.TransactionResponse;
 import com.example.backend.entities.Account;
 import com.example.backend.entities.TransactionLog;
 import com.example.backend.enums.AccountStatus;
+import com.example.backend.enums.TransactionCategory;
 import com.example.backend.exceptions.AccountNotFoundException;
+import com.example.backend.exceptions.DuplicateTransferException;
 import com.example.backend.repositories.AccountRepository;
 import com.example.backend.repositories.TransactionLogRepository;
 import com.example.backend.services.TransferServiceImpl;
@@ -43,6 +45,8 @@ class TransferServiceImplTest {
         String toId = "ACC2222";
         Double amount = 100.0;
         String idempotencyKey = "key123";
+        String category = "RENT";
+        String note = "I am paying the rent";
 
         Account fromAccount = new Account();
         fromAccount.setAccountId(fromId);
@@ -62,7 +66,7 @@ class TransferServiceImplTest {
         when(transactionLogRepository.save(any(TransactionLog.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
-        TransactionResponse response = transferService.transfer(fromId, toId, amount, idempotencyKey);
+        TransactionResponse response = transferService.transfer(fromId, toId, amount, idempotencyKey, category, note);
 
         // Assert
         assertEquals("SUCCESS", response.getStatus());
@@ -71,6 +75,8 @@ class TransferServiceImplTest {
         verify(accountRepository, times(1)).save(fromAccount);
         verify(accountRepository, times(1)).save(toAccount);
         verify(transactionLogRepository, times(1)).save(any(TransactionLog.class));
+        assertEquals("RENT", response.getCategory());
+        assertEquals(note, response.getNote());
     }
 
     @Test
@@ -80,12 +86,14 @@ class TransferServiceImplTest {
         String toId = "ACC2222";
         Double amount = 100.0;
         String idempotencyKey = "key123";
+        String category = "RENT";
+        String note = "I am paying the rent";
 
         when(accountRepository.findByAccountId(fromId)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(AccountNotFoundException.class, () -> 
-            transferService.transfer(fromId, toId, amount, idempotencyKey));
+        assertThrows(AccountNotFoundException.class, () ->
+                transferService.transfer(fromId, toId, amount, idempotencyKey, category, note));
     }
 
     @Test
@@ -95,6 +103,8 @@ class TransferServiceImplTest {
         String toId = "ACC2222";
         Double amount = 100.0;
         String idempotencyKey = "key123";
+        String category = "RENT";
+        String note = "I am paying the rent";
 
         Account fromAccount = new Account();
         fromAccount.setAccountId(fromId);
@@ -103,8 +113,8 @@ class TransferServiceImplTest {
         when(accountRepository.findByAccountId(toId)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(AccountNotFoundException.class, () -> 
-            transferService.transfer(fromId, toId, amount, idempotencyKey));
+        assertThrows(AccountNotFoundException.class, () ->
+                transferService.transfer(fromId, toId, amount, idempotencyKey, category, note));
     }
 
     @Test
@@ -114,6 +124,8 @@ class TransferServiceImplTest {
         String toId = "ACC2222";
         Double amount = 100.0;
         String idempotencyKey = "key123";
+        String category = "RENT";
+        String note = "I am paying the rent";
 
         Account fromAccount = new Account();
         fromAccount.setAccountId(fromId);
@@ -126,8 +138,8 @@ class TransferServiceImplTest {
         when(accountRepository.findByAccountId(fromId)).thenReturn(Optional.of(fromAccount));
         when(accountRepository.findByAccountId(toId)).thenReturn(Optional.of(toAccount));
 
-        TransactionResponse response = transferService.transfer(fromId, toId, amount, idempotencyKey);
-        assertEquals("FAILED", response.getStatus()); // or TransactionStatus.FAILED.name()
+        TransactionResponse response = transferService.transfer(fromId, toId, amount, idempotencyKey, category, note);
+        assertEquals("FAILED", response.getStatus());
     }
     
     @Test
@@ -137,6 +149,8 @@ class TransferServiceImplTest {
         String toId = "ACC2222";
         Double amount = 1000.0; // greater than balance
         String idempotencyKey = "key123";
+        String category = "RENT";
+        String note = "I am paying the rent";
 
         Account fromAccount = new Account();
         fromAccount.setAccountId(fromId);
@@ -152,9 +166,9 @@ class TransferServiceImplTest {
         when(transactionLogRepository.findByIdempotencyKey(idempotencyKey)).thenReturn(null);
 
         // Act
-        TransactionResponse response = transferService.transfer(fromId, toId, amount, idempotencyKey);
+        TransactionResponse response = transferService.transfer(fromId, toId, amount, idempotencyKey, category, note);
 
-        // Assert
+        // Assert: service catches InsufficientBalanceException and marks FAILED
         assertEquals("FAILED", response.getStatus());
         verify(transactionLogRepository, times(1)).save(any(TransactionLog.class));
     }
@@ -166,6 +180,8 @@ class TransferServiceImplTest {
         String toId = "ACC2222";
         Double amount = 100.0;
         String idempotencyKey = "key123";
+        String category = "RENT";
+        String note = "I am paying the rent";
 
         Account fromAccount = new Account();
         fromAccount.setAccountId(fromId);
@@ -180,10 +196,71 @@ class TransferServiceImplTest {
         when(accountRepository.findByAccountId(toId)).thenReturn(Optional.of(toAccount));
         when(transactionLogRepository.findByIdempotencyKey(idempotencyKey)).thenReturn(new TransactionLog()); // Exists
 
+        // Act & Assert: validateIdempotency now throws DuplicateTransferException
+        assertThrows(DuplicateTransferException.class,
+                () -> transferService.transfer(fromId, toId, amount, idempotencyKey, category, note));
+    }
+
+    @Test
+    void testTransfer_nullCategoryDefaultsToOther() {
+        // Arrange
+        String fromId = "ACC1111";
+        String toId = "ACC2222";
+        Double amount = 100.0;
+        String idempotencyKey = "key123";
+
+        Account fromAccount = new Account();
+        fromAccount.setAccountId(fromId);
+        fromAccount.setBalance(500.0);
+        fromAccount.setStatus(AccountStatus.ACTIVE);
+
+        Account toAccount = new Account();
+        toAccount.setAccountId(toId);
+        toAccount.setBalance(200.0);
+        toAccount.setStatus(AccountStatus.ACTIVE);
+
+        when(accountRepository.findByAccountId(fromId)).thenReturn(Optional.of(fromAccount));
+        when(accountRepository.findByAccountId(toId)).thenReturn(Optional.of(toAccount));
+        when(transactionLogRepository.findByIdempotencyKey(idempotencyKey)).thenReturn(null);
+        when(transactionLogRepository.save(any(TransactionLog.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
         // Act
-        TransactionResponse response = transferService.transfer(fromId, toId, amount, idempotencyKey);
+        TransactionResponse response = transferService.transfer(fromId, toId, amount, idempotencyKey, null, "note");
 
         // Assert
-        assertEquals("FAILED", response.getStatus());
+        assertEquals("SUCCESS", response.getStatus());
+        assertEquals(TransactionCategory.OTHER.name(), response.getCategory());
+    }
+
+    @Test
+    void testTransfer_invalidCategoryStringDefaultsToOther() {
+        // Arrange
+        String fromId = "ACC1111";
+        String toId = "ACC2222";
+        Double amount = 100.0;
+        String idempotencyKey = "key123";
+
+        Account fromAccount = new Account();
+        fromAccount.setAccountId(fromId);
+        fromAccount.setBalance(500.0);
+        fromAccount.setStatus(AccountStatus.ACTIVE);
+
+        Account toAccount = new Account();
+        toAccount.setAccountId(toId);
+        toAccount.setBalance(200.0);
+        toAccount.setStatus(AccountStatus.ACTIVE);
+
+        when(accountRepository.findByAccountId(fromId)).thenReturn(Optional.of(fromAccount));
+        when(accountRepository.findByAccountId(toId)).thenReturn(Optional.of(toAccount));
+        when(transactionLogRepository.findByIdempotencyKey(idempotencyKey)).thenReturn(null);
+        when(transactionLogRepository.save(any(TransactionLog.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        TransactionResponse response = transferService.transfer(fromId, toId, amount, idempotencyKey, "not-a-real-category", "note");
+
+        // Assert
+        assertEquals("SUCCESS", response.getStatus());
+        assertEquals(TransactionCategory.OTHER.name(), response.getCategory());
     }
 }
+

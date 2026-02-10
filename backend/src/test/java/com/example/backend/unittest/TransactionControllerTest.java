@@ -48,14 +48,18 @@ class TransactionControllerTest {
         request.setToAccountId("456");
         request.setAmount(100.0);
         request.setIdempotencyKey("key123");
+        request.setCategory("RENT");
+        request.setNote("Paying monthly rent");
 
         TransactionResponse txResponse = new TransactionResponse();
         txResponse.setFromAccountId("user123");
         txResponse.setToAccountId("456");
         txResponse.setAmount(100.0);
         txResponse.setStatus(TransactionStatus.SUCCESS.name());
+        txResponse.setCategory("RENT");
+        txResponse.setNote("Paying monthly rent");
 
-        when(transferService.transfer("user123", "456", 100.0, "key123"))
+        when(transferService.transfer("user123", "456", 100.0, "key123", "RENT", "Paying monthly rent"))
                 .thenReturn(txResponse);
 
         ResponseEntity<TransactionResponse> response =
@@ -75,7 +79,7 @@ class TransactionControllerTest {
         request.setAmount(100.0);
         request.setIdempotencyKey("key123");
 
-        when(transferService.transfer("user123", "999", 100.0, "key123"))
+        when(transferService.transfer("user123", "999", 100.0, "key123", null, null))
                 .thenThrow(new AccountNotFoundException("Receiver account not found"));
 
         assertThrows(AccountNotFoundException.class,
@@ -92,7 +96,7 @@ class TransactionControllerTest {
         request.setAmount(100.0);
         request.setIdempotencyKey("key123");
 
-        when(transferService.transfer("user123", "456", 100.0, "key123"))
+        when(transferService.transfer("user123", "456", 100.0, "key123", null, null))
                 .thenThrow(new AccountNotActiveException("Sender account is not active"));
 
         assertThrows(AccountNotActiveException.class,
@@ -109,7 +113,7 @@ class TransactionControllerTest {
         request.setAmount(1000.0);
         request.setIdempotencyKey("key123");
 
-        when(transferService.transfer("user123", "456", 1000.0, "key123"))
+        when(transferService.transfer("user123", "456", 1000.0, "key123", null, null))
                 .thenThrow(new InsufficientBalanceException("Insufficient balance"));
 
         assertThrows(InsufficientBalanceException.class,
@@ -126,7 +130,7 @@ class TransactionControllerTest {
         request.setAmount(100.0);
         request.setIdempotencyKey("dupKey");
 
-        when(transferService.transfer("user123", "456", 100.0, "dupKey"))
+        when(transferService.transfer("user123", "456", 100.0, "dupKey", null, null))
                 .thenThrow(new DuplicateTransferException("Duplicate transfer detected"));
 
         assertThrows(DuplicateTransferException.class,

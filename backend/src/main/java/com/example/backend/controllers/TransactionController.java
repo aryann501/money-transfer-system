@@ -35,7 +35,9 @@ public class TransactionController {
                 fromAccountId,
                 request.getToAccountId(),
                 request.getAmount(),
-                request.getIdempotencyKey()
+                request.getIdempotencyKey(),
+                request.getCategory(),
+                request.getNote()
         );
         return new ResponseEntity<>(res, HttpStatus.CREATED);
     }

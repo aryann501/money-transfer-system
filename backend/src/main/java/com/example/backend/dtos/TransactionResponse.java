@@ -11,6 +11,8 @@ public class TransactionResponse {
     private Double amount;
     private String status;
     private String failureReason;
+    private String category;
+    private String note;
     private LocalDateTime createdOn;
 
     // Getters
@@ -40,6 +42,14 @@ public class TransactionResponse {
 
     public String getFailureReason() {
         return failureReason;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getNote() {
+        return note;
     }
 
     public LocalDateTime getCreatedOn() {
@@ -75,6 +85,14 @@ public class TransactionResponse {
         this.failureReason = failureReason;
     }
 
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
     public void setCreatedOn(LocalDateTime createdOn) {
         this.createdOn = createdOn;
     }
@@ -89,6 +107,8 @@ public class TransactionResponse {
                 ", amount=" + amount +
                 ", status='" + status + '\'' +
                 ", failureReason='" + failureReason + '\'' +
+                ", category='" + category + '\'' +
+                ", note='" + note + '\'' +
                 ", createdOn=" + createdOn +
                 '}';
     }
