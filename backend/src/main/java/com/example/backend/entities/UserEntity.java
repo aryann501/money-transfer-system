@@ -1,19 +1,10 @@
 package com.example.backend.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import java.util.HashSet;
 import java.util.Set;
 
-@Setter
-@Getter
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Table(name = "users")
 public class UserEntity {
 
@@ -40,9 +31,65 @@ public class UserEntity {
     )
     private Set<Role> roles = new HashSet<>();
 
+    // Default constructor
+    public UserEntity() {
+    }
+
+    // All-args constructor
+    public UserEntity(Long id, String username, String password, Account account, Set<Role> roles) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.account = account;
+        this.roles = roles;
+    }
+
+    // Constructor with username and password
     public UserEntity(String username, String password) {
         this.username = username;
         this.password = password;
+    }
+
+    // Getters
+    public Long getId() {
+        return id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    // Setters
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     @Override

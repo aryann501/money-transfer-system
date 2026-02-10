@@ -1,8 +1,6 @@
 package com.example.backend.security.service;
 
 import com.example.backend.entities.UserEntity;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -10,9 +8,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-@Getter
-@Setter
 public class UserDetailsImpl implements UserDetails {
+
     private final Long id;
     private final String username;
     private final String password;
@@ -43,9 +40,14 @@ public class UserDetailsImpl implements UserDetails {
         );
     }
 
+    // Getters
+    public Long getId() {
+        return id;
+    }
+
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+    public String getUsername() {
+        return username;
     }
 
     @Override
@@ -53,10 +55,16 @@ public class UserDetailsImpl implements UserDetails {
         return password;
     }
 
-    @Override
-    public String getUsername() {
-        return username;
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
     }
+
+    public String getAccountId() {
+        return accountId;
+    }
+
+    // Setters (for non-final fields, but here all are final so no setters are needed)
+    // If you want mutability, remove 'final' and add setters accordingly.
 
     @Override
     public boolean isAccountNonExpired() {

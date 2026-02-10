@@ -2,14 +2,10 @@ package com.example.backend.entities;
 
 import com.example.backend.enums.AccountStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Setter
-@Getter
 @Entity
 public class Account {
 
@@ -38,6 +34,79 @@ public class Account {
     @OneToMany(mappedBy = "toAccount", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<TransactionLog> incomingTransactions;
 
+    // Getters
+    public Long getId() {
+        return id;
+    }
+
+    public String getHolderName() {
+        return holderName;
+    }
+
+    public Double getBalance() {
+        return balance;
+    }
+
+    public String getAccountId() {
+        return accountId;
+    }
+
+    public AccountStatus getStatus() {
+        return status;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public LocalDateTime getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public List<TransactionLog> getOutgoingTransactions() {
+        return outgoingTransactions;
+    }
+
+    public List<TransactionLog> getIncomingTransactions() {
+        return incomingTransactions;
+    }
+
+    // Setters
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setHolderName(String holderName) {
+        this.holderName = holderName;
+    }
+
+    public void setBalance(Double balance) {
+        this.balance = balance;
+    }
+
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
+    }
+
+    public void setStatus(AccountStatus status) {
+        this.status = status;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    public void setLastUpdated(LocalDateTime lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    public void setOutgoingTransactions(List<TransactionLog> outgoingTransactions) {
+        this.outgoingTransactions = outgoingTransactions;
+    }
+
+    public void setIncomingTransactions(List<TransactionLog> incomingTransactions) {
+        this.incomingTransactions = incomingTransactions;
+    }
 
     @Override
     public String toString() {
@@ -45,7 +114,7 @@ public class Account {
                 "id=" + id +
                 ", holderName='" + holderName + '\'' +
                 ", balance=" + balance +
-                ", Account Id=" + accountId +
+                ", accountId='" + accountId + '\'' +
                 ", status=" + status +
                 ", version=" + version +
                 ", lastUpdated=" + lastUpdated +

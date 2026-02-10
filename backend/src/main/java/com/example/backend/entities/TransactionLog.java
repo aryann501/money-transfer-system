@@ -2,13 +2,9 @@ package com.example.backend.entities;
 
 import com.example.backend.enums.TransactionStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Setter
-@Getter
 @Entity
 public class TransactionLog {
 
@@ -36,6 +32,72 @@ public class TransactionLog {
     private String idempotencyKey; // prevents duplicate transfers
 
     private LocalDateTime createdOn;
+
+    // Getters
+    public Long getId() {
+        return id;
+    }
+
+    public Account getFromAccount() {
+        return fromAccount;
+    }
+
+    public Account getToAccount() {
+        return toAccount;
+    }
+
+    public Double getAmount() {
+        return amount;
+    }
+
+    public TransactionStatus getStatus() {
+        return status;
+    }
+
+    public String getFailureReason() {
+        return failureReason;
+    }
+
+    public String getIdempotencyKey() {
+        return idempotencyKey;
+    }
+
+    public LocalDateTime getCreatedOn() {
+        return createdOn;
+    }
+
+    // Setters
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setFromAccount(Account fromAccount) {
+        this.fromAccount = fromAccount;
+    }
+
+    public void setToAccount(Account toAccount) {
+        this.toAccount = toAccount;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+
+    public void setStatus(TransactionStatus status) {
+        this.status = status;
+    }
+
+    public void setFailureReason(String failureReason) {
+        this.failureReason = failureReason;
+    }
+
+    public void setIdempotencyKey(String idempotencyKey) {
+        this.idempotencyKey = idempotencyKey;
+    }
+
+    public void setCreatedOn(LocalDateTime createdOn) {
+        this.createdOn = createdOn;
+    }
 
     @Override
     public String toString() {
