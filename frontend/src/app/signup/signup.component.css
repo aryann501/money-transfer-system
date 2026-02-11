@@ -1,0 +1,131 @@
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  padding: 2rem;
+}
+
+.auth-card {
+  background: #fff;
+  padding: 1.4rem;
+  border-radius: 12px;
+  border: 2px solid #28a745;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 240px;
+  text-align: center;
+  margin: auto;
+}
+
+.logo img {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+}
+
+.card-title h2 {
+  margin: 0.3rem 0;
+  font-weight: 700;
+  color: #333;
+  font-size: 1rem;
+}
+
+.subtitle {
+  font-size: 0.75rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  margin-bottom: 0.7rem;
+  display: flex;
+  justify-content: center;
+}
+
+input {
+  width: 100%;
+  max-width: 200px;
+  padding: 0.55rem;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input:focus {
+  border-color: #28a745;
+  box-shadow: 0 0 4px rgba(40,167,69,0.3);
+  outline: none;
+}
+
+.error {
+  text-align: center;
+}
+
+.error small {
+  color: #d9534f;
+  font-size: 0.65rem;
+}
+
+button {
+  width: 100%;
+  max-width: 200px;
+  padding: 0.6rem;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 0 auto;
+  transition: background 0.3s, transform 0.2s;
+}
+
+button:hover {
+  background: #1e7e34;
+  transform: translateY(-2px);
+}
+
+.signup-link {
+  margin-top: 0.8rem;
+  font-size: 0.75rem;
+}
+
+.signup-link a {
+  color: #28a745;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.signup-link a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 1.2rem;
+    max-width: 85%;
+  }
+
+  input, button {
+    max-width: 100%;
+  }
+
+  .logo img {
+    width: 65px;
+    height: 65px;
+  }
+
+  .card-title h2 {
+    font-size: 0.9rem;
+  }
+
+  .error small {
+    font-size: 0.6rem;
+  }
+}
