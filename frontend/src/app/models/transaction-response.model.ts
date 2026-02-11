@@ -1,4 +1,5 @@
 export interface TransactionResponse {
+  id: number;
   fromAccountId: string;
   fromAccountHolderName: string;
   toAccountId: string;

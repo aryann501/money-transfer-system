@@ -1,47 +1,76 @@
-<div class="dashboard">
-  <!-- Top rectangular card -->
-  <div class="top-card">
-    <ng-container *ngIf="role === 'ROLE_ADMIN'; else userCard">
-      <h3>Admin Dashboard</h3>
-      <p>Username: {{ username }}</p>
-      <p>Role: {{ role }}</p>
-    </ng-container>
+<div class="dashboard-container">
+  <!-- Header Section -->
+  <header class="dashboard-header">
+    <div class="user-info">
+      <ng-container *ngIf="role === 'ROLE_ADMIN'; else userCard">
+        <h1>Hii {{ username }}</h1>
+        <p class="user-details"><span>Role:</span> {{ role }}</p>
+      </ng-container>
 
-    <ng-template #userCard>
-      <h3>User Dashboard</h3>
-      <p>Holder Name: {{ account?.holderName }}</p>
-      <p>Account Number: {{ account?.accountId }}</p>
-      <p>Balance: {{ account?.balance | currency:'INR' }}</p>
-    </ng-template>
+      <ng-template #userCard>
+        <div class="greeting-section">
+          <h1>Hii {{ account?.holderName }}</h1>
+        </div>
+        <div class="details-grid">
+          <p class="account-number">Account: {{ account?.accountId }}</p>
+          <p class="balance">{{ account?.balance | currency:'INR' }}</p>
+        </div>
+      </ng-template>
+    </div>
+    
+    <button class="logout-btn" (click)="logout()">
+      <span class="icon">⏻</span> Logout
+    </button>
+  </header>
 
-    <!-- Logout button -->
-    <button class="logout-btn" (click)="logout()">Logout</button>
-  </div>
+  <!-- Main Content / Actions Grid -->
+  <main class="dashboard-main">
+    <div class="options-grid">
+      <!-- Admin Options -->
+      <ng-container *ngIf="role === 'ROLE_ADMIN'">
+        <div class="card" (click)="goTo('/search-account')" tabindex="0" (keydown.enter)="goTo('/search-account')">
+          <div class="icon-wrapper">
+            <img src="assets/account.svg" alt="Search Account">
+          </div>
+          <h2>Search Account</h2>
+          <p>Find accounts by ID</p>
+        </div>
+        
+        <div class="card" (click)="goTo('/search-transactions')" tabindex="0" (keydown.enter)="goTo('/search-transactions')">
+          <div class="icon-wrapper">
+            <img src="assets/transactions.svg" alt="Search Transactions">
+          </div>
+          <h2>Search Transactions</h2>
+          <p>View transactions by Account ID</p>
+        </div>
+      </ng-container>
 
-  <!-- Option cards -->
-  <div class="options">
-    <!-- Admin options -->
-    <div *ngIf="role === 'ROLE_ADMIN'" class="card" (click)="goTo('/search-account')">
-      <img src="assets/account.png" alt="Account Search">
-      <p>Search Account by ID</p>
-    </div>
-    <div *ngIf="role === 'ROLE_ADMIN'" class="card" (click)="goTo('/search-transactions')">
-      <img src="assets/transactions.png" alt="Transactions">
-      <p>Search Transactions by Account ID</p>
-    </div>
+      <!-- User Options -->
+      <ng-container *ngIf="role === 'ROLE_USER'">
+        <div class="card" (click)="goTo('/transfer')" tabindex="0" (keydown.enter)="goTo('/transfer')">
+          <div class="icon-wrapper">
+            <img src="assets/transfer.svg" alt="Transfer Money">
+          </div>
+          <h2>Transfer Money</h2>
+          <p>Send funds securely</p>
+        </div>
 
-    <!-- User options -->
-    <div *ngIf="role === 'ROLE_USER'" class="card" (click)="goTo('/transfer')">
-      <img src="assets/transfer.png" alt="Transfer">
-      <p>Transfer</p>
+        <div class="card" (click)="goTo('/history')" tabindex="0" (keydown.enter)="goTo('/history')">
+          <div class="icon-wrapper">
+            <img src="assets/history.svg" alt="Transaction History">
+          </div>
+          <h2>My Transactions</h2>
+          <p>View your transfer history</p>
+        </div>
+
+        <div class="card" (click)="goTo('/details')" tabindex="0" (keydown.enter)="goTo('/details')">
+          <div class="icon-wrapper">
+            <img src="assets/details.svg" alt="Account Details">
+          </div>
+          <h2>My Details</h2>
+          <p>View personal information</p>
+        </div>
+      </ng-container>
     </div>
-    <div *ngIf="role === 'ROLE_USER'" class="card" (click)="goTo('/history')">
-      <img src="assets/history.png" alt="History">
-      <p>My Transactions</p>
-    </div>
-    <div *ngIf="role === 'ROLE_USER'" class="card" (click)="goTo('/details')">
-      <img src="assets/details.png" alt="Details">
-      <p>My Details</p>
-    </div>
-  </div>
+  </main>
 </div>

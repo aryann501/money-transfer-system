@@ -1,141 +1,140 @@
-<div class="transfer-card" *ngIf="!receiptVisible">
-    <h2>Transfer Money</h2>
+<div class="transfer-page-container">
+  <div class="transfer-content">
+    <div class="page-header">
+      <h1>Transfer Money</h1>
+      <p>Send funds securely to another account</p>
+    </div>
 
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <!-- To Account -->
-      <div
-        class="form-group"
-        [ngClass]="{ 'has-error': isControlInvalid('toAccountId') || hasServerError('toAccountId') }"
-      >
-        <label for="toAccountId">To Account ID</label>
-        <input
-          id="toAccountId"
-          type="text"
-          formControlName="toAccountId"
-          placeholder="Enter receiver account ID"
-        />
-        <div class="error" *ngIf="isControlInvalid('toAccountId')">
-          Account ID is required.
+    <div class="transfer-card" *ngIf="!receiptVisible">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <!-- To Account -->
+        <div
+          class="form-group"
+          [ngClass]="{ 'has-error': isControlInvalid('toAccountId') || hasServerError('toAccountId') }"
+        >
+          <label for="toAccountId">To Account ID</label>
+          <input
+            id="toAccountId"
+            type="text"
+            formControlName="toAccountId"
+            placeholder="Enter receiver account ID"
+          />
+          <div class="error" *ngIf="isControlInvalid('toAccountId')">
+            Account ID is required.
+          </div>
+          <div class="error" *ngIf="hasServerError('toAccountId')">
+            Account problem detected. Please check the account ID.
+          </div>
         </div>
-        <div class="error" *ngIf="hasServerError('toAccountId')">
-          Account problem detected. Please check the account ID.
+    
+        <!-- Amount -->
+        <div
+          class="form-group"
+          [ngClass]="{ 'has-error': isControlInvalid('amount') || hasServerError('amount') }"
+        >
+          <label for="amount">Amount</label>
+          <input
+            id="amount"
+            type="number"
+            formControlName="amount"
+            placeholder="Enter amount"
+            min="1"
+          />
+          <div class="error" *ngIf="isControlInvalid('amount')">
+            Amount must be at least 1.
+          </div>
+          <div class="error" *ngIf="hasServerError('amount')">
+            There is an issue with the amount (e.g. insufficient balance or duplicate transfer).
+          </div>
+        </div>
+    
+        <!-- Category -->
+        <div
+          class="form-group"
+          [ngClass]="{ 'has-error': isControlInvalid('category') }"
+        >
+          <label for="category">Category</label>
+          <select id="category" formControlName="category">
+            <option *ngFor="let cat of categories" [value]="cat.value">
+              {{ cat.label }}
+            </option>
+          </select>
+          <div class="error" *ngIf="isControlInvalid('category')">
+            Please select a category.
+          </div>
+        </div>
+    
+        <!-- Note -->
+        <div class="form-group">
+          <label for="note">Note (optional)</label>
+          <textarea
+            id="note"
+            rows="3"
+            formControlName="note"
+            placeholder="Add a short note about this transfer"
+          ></textarea>
+        </div>
+    
+        <button type="submit" [disabled]="isSubmitDisabled()" class="submit-btn">
+          {{ submitting ? 'Transferring...' : 'Transfer Funds' }}
+        </button>
+  
+        <!-- Global server message -->
+        <p class="server-error" *ngIf="serverErrorMessage">
+          {{ serverErrorMessage }}
+        </p>
+        <p class="server-success" *ngIf="successMessage">
+          {{ successMessage }}
+        </p>
+      </form>
+    </div>
+  
+    <!-- Payroll-style receipt view -->
+    <div class="transfer-card receipt-card" *ngIf="receiptVisible && receiptData">
+      <div class="receipt-header">
+        <div class="receipt-icon">
+          <img src="assets/transactions.svg" alt="Receipt">
+        </div>
+        <div>
+          <h2>Payment Successful</h2>
+          <p class="receipt-subtitle">Transaction ID: {{ receiptData.id }}</p>
         </div>
       </div>
-  
-      <!-- Amount -->
-      <div
-        class="form-group"
-        [ngClass]="{ 'has-error': isControlInvalid('amount') || hasServerError('amount') }"
-      >
-        <label for="amount">Amount</label>
-        <input
-          id="amount"
-          type="number"
-          formControlName="amount"
-          placeholder="Enter amount"
-          min="1"
-        />
-        <div class="error" *ngIf="isControlInvalid('amount')">
-          Amount must be at least 1.
-        </div>
-        <div class="error" *ngIf="hasServerError('amount')">
-          There is an issue with the amount (e.g. insufficient balance or duplicate transfer).
-        </div>
+      
+      <div class="receipt-amount">
+        ₹{{ receiptData.amount | number : '1.2-2' }}
       </div>
   
-      <!-- Category -->
-      <div
-        class="form-group"
-        [ngClass]="{ 'has-error': isControlInvalid('category') }"
-      >
-        <label for="category">Category</label>
-        <select id="category" formControlName="category">
-          <option *ngFor="let cat of categories" [value]="cat.value">
-            {{ cat.label }}
-          </option>
-        </select>
-        <div class="error" *ngIf="isControlInvalid('category')">
-          Please select a category.
+      <div class="receipt-body">
+        <div class="receipt-row">
+          <span class="label">From</span>
+          <span class="value">{{ receiptData.fromAccountHolderName }} <small>({{ receiptData.fromAccountId }})</small></span>
+        </div>
+  
+        <div class="receipt-row">
+          <span class="label">To</span>
+          <span class="value">{{ receiptData.toAccountHolderName }} <small>({{ receiptData.toAccountId }})</small></span>
+        </div>
+  
+        <div class="receipt-row">
+          <span class="label">Category</span>
+          <span class="value">{{ receiptData.category || 'N/A' }}</span>
+        </div>
+  
+        <div class="receipt-row">
+          <span class="label">Note</span>
+          <span class="value">{{ receiptData.note || '-' }}</span>
+        </div>
+  
+        <div class="receipt-row">
+          <span class="label">Date</span>
+          <span class="value">{{ receiptData.createdOn | date : 'medium' }}</span>
         </div>
       </div>
-  
-      <!-- Note -->
-      <div class="form-group">
-        <label for="note">Note (optional)</label>
-        <textarea
-          id="note"
-          rows="3"
-          formControlName="note"
-          placeholder="Add a short note about this transfer"
-        ></textarea>
+
+      <div class="receipt-footer">
+         <p>Closing in <span>{{ countdownSeconds }}</span> seconds</p>
       </div>
-  
-      <button type="submit" [disabled]="isSubmitDisabled()">
-        {{ submitting ? 'Transferring...' : 'Transfer' }}
-      </button>
-
-      <!-- Global server message -->
-      <p class="server-error" *ngIf="serverErrorMessage">
-        {{ serverErrorMessage }}
-      </p>
-      <p class="server-success" *ngIf="successMessage">
-        {{ successMessage }}
-      </p>
-    </form>
-</div>
-
-<!-- Payroll-style receipt view -->
-<div class="transfer-card receipt-card" *ngIf="receiptVisible && receiptData">
-  <div class="receipt-header">
-    <div>
-      <h2>Payment Receipt</h2>
-      <p class="receipt-subtitle">Your transfer completed successfully.</p>
-    </div>
-    <div class="receipt-timer">
-      Closing in <span>{{ countdownSeconds }}</span> seconds
-    </div>
-  </div>
-
-  <div class="receipt-body">
-    <div class="receipt-row">
-      <span class="label">From Account</span>
-      <span class="value">
-        {{ receiptData.fromAccountId }} &mdash; {{ receiptData.fromAccountHolderName }}
-      </span>
-    </div>
-
-    <div class="receipt-row">
-      <span class="label">To Account</span>
-      <span class="value">
-        {{ receiptData.toAccountId }} &mdash; {{ receiptData.toAccountHolderName }}
-      </span>
-    </div>
-
-    <div class="receipt-row">
-      <span class="label">Amount</span>
-      <span class="value amount">₹{{ receiptData.amount | number : '1.2-2' }}</span>
-    </div>
-
-    <div class="receipt-row">
-      <span class="label">Category</span>
-      <span class="value">{{ receiptData.category || 'N/A' }}</span>
-    </div>
-
-    <div class="receipt-row">
-      <span class="label">Note</span>
-      <span class="value">{{ receiptData.note || '-' }}</span>
-    </div>
-
-    <div class="receipt-row">
-      <span class="label">Status</span>
-      <span class="value status">{{ receiptData.status }}</span>
-    </div>
-
-    <div class="receipt-row">
-      <span class="label">Date & Time</span>
-      <span class="value">
-        {{ receiptData.createdOn | date : 'medium' }}
-      </span>
     </div>
   </div>
 </div>
