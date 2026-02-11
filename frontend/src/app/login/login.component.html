@@ -1,25 +1,32 @@
 <div class="auth-container">
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-    <h2>Login</h2>
-
-    <div class="form-group">
-      <input formControlName="username" placeholder="Username" />
-      <div class="error" *ngIf="loginForm.get('username')?.touched && loginForm.get('username')?.invalid">
-        <small>Username is required.</small>
-      </div>
+  <div class="auth-card">
+    <div class="logo">
+      <!-- Replace with your logo image -->
+      <img src="assets/logo1.jpg" alt="App Logo" />
     </div>
 
-    <div class="form-group">
-      <input type="password" formControlName="password" placeholder="Password" />
-      <div class="error" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
-        <small>Password is required.</small>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <h2>Login</h2>
+
+      <div class="form-group">
+        <input formControlName="username" placeholder="Username" />
+        <div class="error" *ngIf="loginForm.get('username')?.touched && loginForm.get('username')?.invalid">
+          <small>Username is required.</small>
+        </div>
       </div>
-    </div>
 
-    <button type="submit">Login</button>
-  </form>
+      <div class="form-group">
+        <input type="password" formControlName="password" placeholder="Password" />
+        <div class="error" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
+          <small>Password is required.</small>
+        </div>
+      </div>
 
-  <p class="signup-link">
-    Don’t have an account? <a routerLink="/signup">Sign up</a>
-  </p>
+      <button type="submit">Login</button>
+    </form>
+
+    <p class="signup-link">
+      Don’t have an account? <a routerLink="/signup">Sign up</a>
+    </p>
+  </div>
 </div>

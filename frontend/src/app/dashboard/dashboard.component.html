@@ -1,1 +1,47 @@
-<p>dashboard works!</p>
+<div class="dashboard">
+  <!-- Top rectangular card -->
+  <div class="top-card">
+    <ng-container *ngIf="role === 'ROLE_ADMIN'; else userCard">
+      <h3>Admin Dashboard</h3>
+      <p>Username: {{ username }}</p>
+      <p>Role: {{ role }}</p>
+    </ng-container>
+
+    <ng-template #userCard>
+      <h3>User Dashboard</h3>
+      <p>Holder Name: {{ account?.holderName }}</p>
+      <p>Account Number: {{ account?.accountId }}</p>
+      <p>Balance: {{ account?.balance | currency:'INR' }}</p>
+    </ng-template>
+
+    <!-- Logout button -->
+    <button class="logout-btn" (click)="logout()">Logout</button>
+  </div>
+
+  <!-- Option cards -->
+  <div class="options">
+    <!-- Admin options -->
+    <div *ngIf="role === 'ROLE_ADMIN'" class="card" (click)="goTo('/search-account')">
+      <img src="assets/account.png" alt="Account Search">
+      <p>Search Account by ID</p>
+    </div>
+    <div *ngIf="role === 'ROLE_ADMIN'" class="card" (click)="goTo('/search-transactions')">
+      <img src="assets/transactions.png" alt="Transactions">
+      <p>Search Transactions by Account ID</p>
+    </div>
+
+    <!-- User options -->
+    <div *ngIf="role === 'ROLE_USER'" class="card" (click)="goTo('/transfer')">
+      <img src="assets/transfer.png" alt="Transfer">
+      <p>Transfer</p>
+    </div>
+    <div *ngIf="role === 'ROLE_USER'" class="card" (click)="goTo('/history')">
+      <img src="assets/history.png" alt="History">
+      <p>My Transactions</p>
+    </div>
+    <div *ngIf="role === 'ROLE_USER'" class="card" (click)="goTo('/details')">
+      <img src="assets/details.png" alt="Details">
+      <p>My Details</p>
+    </div>
+  </div>
+</div>

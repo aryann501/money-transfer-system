@@ -8,5 +8,9 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
-  { path: '', redirectTo: 'login', pathMatch: 'full' }   
+  { path: 'transfer', loadComponent: () => import('./transfer/transfer.component').then(m => m.TransferComponent), canActivate: [AuthGuard] },
+  { path: 'history', loadComponent: () => import('./history/history.component').then(m => m.HistoryComponent), canActivate: [AuthGuard] },
+  { path: 'details', loadComponent: () => import('./details/details.component').then(m => m.DetailsComponent), canActivate: [AuthGuard] },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: '**', redirectTo: 'login' }
 ];
