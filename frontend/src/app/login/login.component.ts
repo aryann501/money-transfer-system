@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet, RouterLink } from '@angular/router';
@@ -13,8 +13,9 @@ import { JwtResponse } from '../models/jwt-response.model';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginForm: FormGroup;
+  errorMessage: string | null = null;   // ✅ inline error message
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.loginForm = this.fb.group({
@@ -23,7 +24,20 @@ export class LoginComponent {
     });
   }
 
+  ngOnInit(): void {
+    // No auto-redirect here — user can still open login page
+  }
+
   onSubmit(): void {
+    this.errorMessage = null; // reset before each submit
+
+    const existingUser = localStorage.getItem('user');
+    if (existingUser) {
+      // ✅ Block login if *any* user is already logged in
+      this.errorMessage = 'A user is already logged in. Please log out first.';
+      return;
+    }
+
     if (this.loginForm.valid) {
       const request: LoginRequest = this.loginForm.value;
 
@@ -40,15 +54,18 @@ export class LoginComponent {
         },
         error: (err) => {
           console.error('Login failed', err);
-          if (err.status === 401) {
-            alert('Incorrect username or password.');
+
+          if (typeof err.error === 'string') {
+            this.errorMessage = err.error;   // plain string from GlobalExceptionHandler
+          } else if (err.error?.message) {
+            this.errorMessage = err.error.message; // JSON from AuthEntryPointJwt
           } else {
-            alert('Login failed. Please try again.');
+            this.errorMessage = 'Login failed. Please try again.';
           }
         }
       });
     } else {
-      alert('Please enter both username and password.');
+      this.errorMessage = 'Please enter both username and password.';
     }
   }
 }

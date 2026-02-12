@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { HttpErrorResponse } from '@angular/common/http';
 import { TransferService } from '../services/transfer.service';
 import { TransactionResponse } from '../models/transaction-response.model';
+import { Router } from '@angular/router';
 
 interface UiCategoryOption {
   value: string;
@@ -38,7 +39,7 @@ export class TransferComponent {
     { value: 'OTHER', label: 'Other' },
   ];
 
-  constructor(private fb: FormBuilder, private transferService: TransferService) {
+  constructor(private fb: FormBuilder, private transferService: TransferService, private router: Router) {
     this.form = this.fb.group({
       toAccountId: ['', [Validators.required]],
       amount: [null, [Validators.required, Validators.min(1)]],
@@ -46,6 +47,11 @@ export class TransferComponent {
       note: [''],
     });
   }
+
+  
+    goBack(): void{
+      this.router.navigate(['/dashboard']);
+    }
 
   get toAccountId() { return this.form.get('toAccountId')!; }
   get amount() { return this.form.get('amount')!; }
@@ -104,9 +110,17 @@ export class TransferComponent {
   }
 
   private handleServerError(err: HttpErrorResponse): void {
-    const message: string =
-      (err.error && (err.error.message || err.error.failureReason)) ||
-      err.message || 'Transaction failed';
+    let message: string;
+
+    if (typeof err.error === 'string') {
+      // backend returned plain string
+      message = err.error;
+    } else if (err.error && (err.error.message || err.error.failureReason)) {
+      // backend returned JSON object
+      message = err.error.message || err.error.failureReason;
+    } else {
+      message = err.message || 'Transaction failed';
+    }
 
     this.serverErrorMessage = message;
     const lower = message.toLowerCase();
@@ -137,3 +151,4 @@ export class TransferComponent {
     return this.form.invalid || this.submitting;
   }
 }
+

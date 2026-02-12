@@ -14,6 +14,7 @@ import { SignupRequest } from '../models/signup-request.model';
 })
 export class SignupComponent {
   signupForm: FormGroup;
+  errorMessage: string | null = null;
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.signupForm = this.fb.group({
@@ -25,25 +26,29 @@ export class SignupComponent {
   }
 
   onSubmit(): void {
+    this.errorMessage = null;
+
     if (this.signupForm.valid) {
       const request: SignupRequest = this.signupForm.value;
 
       this.authService.signup(request).subscribe({
-        next: (response) => {
-          alert(`Signup successful! Account ID: ${response.accountId}`);
-          this.router.navigate(['/login']);   // ✅ redirect to login
+        next: () => {
+          this.router.navigate(['/login']);
         },
         error: (err) => {
           console.error('Signup failed', err);
-          if (err.status === 400 && err.error?.message?.includes('username')) {
-            alert('Username already taken. Please choose another.');
+
+          if (typeof err.error === 'string') {
+            this.errorMessage = err.error;   // plain string from GlobalExceptionHandler
+          } else if (err.error?.message) {
+            this.errorMessage = err.error.message; // JSON from AuthEntryPointJwt
           } else {
-            alert('Signup failed. Please try again.');
+            this.errorMessage = 'Signup failed. Please try again.';
           }
         }
       });
     } else {
-      alert('Please fill all fields correctly.');
+      this.errorMessage = 'Please fill all fields correctly.';
     }
   }
 }
