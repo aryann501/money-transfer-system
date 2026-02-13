@@ -80,6 +80,7 @@ public class AccountServiceImpl implements AccountService {
         response.setAmount(transaction.getAmount());
         response.setStatus(transaction.getStatus().name());
         response.setCreatedOn(transaction.getCreatedOn());
+        response.setFailureReason(transaction.getFailureReason());
         return response;
     }
 

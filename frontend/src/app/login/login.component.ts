@@ -15,17 +15,45 @@ import { JwtResponse } from '../models/jwt-response.model';
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
-  errorMessage: string | null = null;   // ✅ inline error message
+  errorMessage: string | null = null;
+  showPassword: boolean = false;
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.loginForm = this.fb.group({
-      username: ['', Validators.required],
-      password: ['', Validators.required]
+      username: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(15),
+          Validators.pattern(/^[a-zA-Z0-9_]+$/)
+        ]
+      ],
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(8),
+          Validators.maxLength(15)
+        ]
+      ]
     });
   }
 
   ngOnInit(): void {
     // No auto-redirect here — user can still open login page
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  get username() {
+    return this.loginForm.get('username');
+  }
+
+  get password() {
+    return this.loginForm.get('password');
   }
 
   onSubmit(): void {

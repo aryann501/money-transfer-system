@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TransferService } from '../services/transfer.service';
 import { TransactionResponse } from '../models/transaction-response.model';
@@ -41,17 +41,25 @@ export class TransferComponent {
 
   constructor(private fb: FormBuilder, private transferService: TransferService, private router: Router) {
     this.form = this.fb.group({
-      toAccountId: ['', [Validators.required]],
-      amount: [null, [Validators.required, Validators.min(1)]],
+      toAccountId: ['', [Validators.required, this.accountIdValidator]],
+      amount: [null, [Validators.required, Validators.min(0.01)]],
       category: ['RENT', [Validators.required]],
       note: [''],
     });
   }
 
-  
-    goBack(): void{
-      this.router.navigate(['/dashboard']);
+  // Custom validator for account ID format (ACC followed by 4 digits)
+  accountIdValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) {
+      return null; // Let required validator handle empty value
     }
+    const pattern = /^ACC\d{4}$/;
+    return pattern.test(control.value) ? null : { invalidAccountId: true };
+  }
+
+  goBack(): void {
+    this.router.navigate(['/dashboard']);
+  }
 
   get toAccountId() { return this.form.get('toAccountId')!; }
   get amount() { return this.form.get('amount')!; }
@@ -105,6 +113,7 @@ export class TransferComponent {
         clearInterval(this.countdownTimer);
         this.receiptVisible = false;
         this.receiptData = null;
+        this.router.navigate(['/transfer']);
       }
     }, 1000);
   }
@@ -123,18 +132,6 @@ export class TransferComponent {
     }
 
     this.serverErrorMessage = message;
-    const lower = message.toLowerCase();
-
-    if (lower.includes('account not found')) {
-      this.toAccountId.setErrors({ ...(this.toAccountId.errors || {}), server: true });
-    }
-    if (lower.includes('insufficient balance')) {
-      this.amount.setErrors({ ...(this.amount.errors || {}), server: true });
-    }
-    if (lower.includes('duplicate transfer')) {
-      this.amount.setErrors({ ...(this.amount.errors || {}), server: true });
-      this.toAccountId.setErrors({ ...(this.toAccountId.errors || {}), server: true });
-    }
   }
 
   isControlInvalid(controlName: string): boolean {
@@ -142,13 +139,7 @@ export class TransferComponent {
     return !!ctrl && ctrl.invalid && (ctrl.touched || ctrl.dirty);
   }
 
-  hasServerError(controlName: string): boolean {
-    const ctrl = this.form.get(controlName);
-    return !!ctrl && !!ctrl.errors?.['server'];
-  }
-
   isSubmitDisabled(): boolean {
     return this.form.invalid || this.submitting;
   }
 }
-

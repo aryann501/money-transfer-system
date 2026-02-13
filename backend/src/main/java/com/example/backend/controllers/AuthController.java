@@ -59,6 +59,11 @@ public class AuthController {
         this.jwtUtils = jwtUtils;
         this.accountService = accountService;
     }
+    @GetMapping("/check-username")
+    public ResponseEntity<Boolean> checkUsernameAvailability(@RequestParam String username) {
+        boolean isAvailable = !userRepository.existsByUsername(username);
+        return ResponseEntity.ok(isAvailable);
+    }
 
     @PostMapping("/signin")
     public ResponseEntity<JwtResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
