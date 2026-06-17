@@ -104,7 +104,7 @@ public class WebSecurityConfig {
                         // ADMIN endpoints
                         .requestMatchers("/api/v1/transfers/admin").hasRole(ROLE_ADMIN)
                         .requestMatchers("/api/v1/accounts/*").hasRole(ROLE_ADMIN)
-                        .requestMatchers("/api/test/admin").hasRole(ROLE_ADMIN)
+                        .requestMatchers("/api/rewards/**").hasRole(ROLE_USER)
 
                         .anyRequest().authenticated()
                 )

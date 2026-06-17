@@ -25,5 +25,5 @@ export class TransferService {
       { headers: this.getAuthHeaders() }
     );
   }
- 
+
 }

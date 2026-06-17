@@ -11,6 +11,7 @@ import com.example.backend.exceptions.*;
 import com.example.backend.repositories.AccountRepository;
 import com.example.backend.repositories.TransactionLogRepository;
 import org.springframework.stereotype.Service;
+import com.example.backend.services.RewardService;
 
 import java.time.LocalDateTime;
 
@@ -26,12 +27,16 @@ public class TransferServiceImpl implements TransferService {
 
     private final AccountRepository accountRepository;
     private final TransactionLogRepository transactionLogRepository;
+private final RewardService rewardService;
 
     public TransferServiceImpl(AccountRepository accountRepository,
-                               TransactionLogRepository transactionLogRepository) {
-        this.accountRepository = accountRepository;
-        this.transactionLogRepository = transactionLogRepository;
-    }
+                           TransactionLogRepository transactionLogRepository,
+                           RewardService rewardService) {
+    this.accountRepository = accountRepository;
+    this.transactionLogRepository = transactionLogRepository;
+    this.rewardService = rewardService;
+}
+
 
     @Override
     public TransactionResponse transfer(String fromAccountId,
@@ -81,6 +86,7 @@ public class TransferServiceImpl implements TransferService {
         );
 
         transactionLogRepository.save(log);
+rewardService.processRewardForTransfer(log, fromAccount, toAccount);
 
         return buildResponse(fromAccount, toAccount, amount,
                 transactionStatus, failureReason, now,

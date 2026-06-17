@@ -120,17 +120,17 @@ public class AuthController {
 
         if (strRoles == null) {
             Role userRole = roleRepository.findByRoleName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND_ERROR));
+                    .orElseGet(() -> roleRepository.save(new Role(ERole.ROLE_USER)));
             roles.add(userRole);
         } else {
             strRoles.forEach(role -> {
                 if (role.equals("admin")) {
                     Role adminRole = roleRepository.findByRoleName(ERole.ROLE_ADMIN)
-                            .orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND_ERROR));
+                            .orElseGet(() -> roleRepository.save(new Role(ERole.ROLE_ADMIN)));
                     roles.add(adminRole);
                 } else {
                     Role userRole = roleRepository.findByRoleName(ERole.ROLE_USER)
-                            .orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND_ERROR));
+                            .orElseGet(() -> roleRepository.save(new Role(ERole.ROLE_USER)));
                     roles.add(userRole);
                 }
             });

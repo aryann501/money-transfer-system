@@ -34,7 +34,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-        try {
+        logger.debug("AuthTokenFilter - Authorization header: {}", request.getHeader("Authorization"));
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUserNameFromJwtToken(jwt);
@@ -47,10 +47,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                         .map(SimpleGrantedAuthority::new)
                         .toList();
 
+                Long userId = jwtUtils.getUserIdFromJwtToken(jwt);
                 UserDetailsImpl userDetails = new UserDetailsImpl(
-                        null, // userId not needed here
+                        userId,
                         username,
-                        null, // password not needed
+                        null,
                         authorities,
                         accountId
                 );
