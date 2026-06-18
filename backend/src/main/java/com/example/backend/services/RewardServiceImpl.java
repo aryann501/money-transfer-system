@@ -1,19 +1,17 @@
 package com.example.backend.services;
 
-import com.example.backend.dtos.RewardRedemptionResponse;
 import com.example.backend.dtos.RewardResponse;
 import com.example.backend.dtos.RewardSummaryResponse;
 import com.example.backend.entities.Account;
 import com.example.backend.entities.RewardGrant;
-import com.example.backend.entities.RewardRedemption;
 import com.example.backend.entities.TransactionLog;
 import com.example.backend.entities.UserEntity;
 import com.example.backend.exceptions.InsufficientRewardPointsException;
 import com.example.backend.repositories.RewardGrantRepository;
-import com.example.backend.repositories.RewardRedemptionRepository;
 import com.example.backend.repositories.UserRepository;
 import com.example.backend.util.IdGenerator;
 import com.example.backend.util.RewardRules;
+
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +28,8 @@ public class RewardServiceImpl implements RewardService {
     private static final Logger logger = LoggerFactory.getLogger(RewardServiceImpl.class);
 
     private final RewardGrantRepository rewardGrantRepository;
-    private final RewardRedemptionRepository rewardRedemptionRepository;
     private final UserRepository userRepository;
+    
 
 
     @Override
@@ -68,37 +66,9 @@ public class RewardServiceImpl implements RewardService {
     }
 
     @Override
-    public RewardRedemptionResponse redeemPointsForTransfer(UserEntity user, String transactionId, int pointsToUse) {
-        if (pointsToUse <= 0) {
-            logger.warn("Attempted to redeem non-positive points | userId={} | txId={} | points={}", user.getId(), transactionId, pointsToUse);
-            return null; // or could throw exception, but keep existing behavior
-        }
-        if (rewardRedemptionRepository.findByTransactionId(transactionId).isPresent()) {
-            logger.warn("Redemption already processed | txId={}", transactionId);
-            return null;
-        }
-
-        RewardRedemption redemption = new RewardRedemption(user, transactionId, pointsToUse);
-        redemption.setId(IdGenerator.generateRedemptionId());
-        rewardRedemptionRepository.save(redemption);
-
-        logger.info("Reward redeemed | redemptionId={} | userId={} | txId={} | points={}",
-                redemption.getId(), user.getId(), transactionId, pointsToUse);
-        // Build and return response DTO
-        return new RewardRedemptionResponse(
-                redemption.getId(),
-                redemption.getTransactionId(),
-                redemption.getPointsUsed(),
-                redemption.getRupeeValue(),
-                redemption.getCreatedOn()
-        );
-    }
-
-    @Override
     public int getAvailablePoints(Long userId) {
         int earned = rewardGrantRepository.sumPointsByUserId(userId);
-        int redeemed = rewardRedemptionRepository.sumPointsUsedByUserId(userId);
-        return Math.max(0, earned - redeemed);
+        return Math.max(0, earned);
     }
 
     @Override
@@ -131,25 +101,40 @@ public class RewardServiceImpl implements RewardService {
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Long userId = userDetails.getId();
 
-        // Retrieve grant and redemption histories
+        // Retrieve grant history
         List<RewardResponse> history = rewardGrantRepository
                 .findByUser_IdOrderByCreatedOnDesc(userId)
                 .stream()
                 .map(this::toGrantResponse)
                 .toList();
 
-        List<RewardRedemptionResponse> redemptions = rewardRedemptionRepository
-                .findByUser_IdOrderByCreatedOnDesc(userId)
-                .stream()
-                .map(this::toRedemptionResponse)
-                .toList();
+        // Calculate totals based on grant history (positive = earned, negative = redeemed)
+        int totalEarned = history.stream()
+                .filter(r -> r.getPoints() > 0)
+                .mapToInt(RewardResponse::getPoints)
+                .sum();
+        int totalRedeemed = history.stream()
+                .filter(r -> r.getPoints() < 0)
+                .mapToInt(r -> -r.getPoints())
+                .sum();
 
-        // Calculate totals based on the retrieved histories
-        int totalEarned = history.stream().mapToInt(RewardResponse::getPoints).sum();
-        int totalRedeemed = redemptions.stream().mapToInt(RewardRedemptionResponse::getPointsUsed).sum();
-        int available = Math.max(0, totalEarned - totalRedeemed);
+        int available = totalEarned - totalRedeemed;
+        return new RewardSummaryResponse(available, totalEarned, totalRedeemed, history);
+    }
 
-        return new RewardSummaryResponse(available, totalEarned, totalRedeemed, history, redemptions);
+    @Override
+    public void processRewardRedemption(Long userId, String transactionId, int points) {
+        if (points <= 0) {
+            throw new IllegalArgumentException("Points to redeem must be > 0");
+        }
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        RewardGrant redemption = new RewardGrant(user, transactionId, -points,
+                BigDecimal.valueOf(points));
+        redemption.setId(IdGenerator.generateRewardId());
+        rewardGrantRepository.save(redemption);
+        logger.info("Reward redeemed | rewardId={} | userId={} | txId={} | pointsRedeemed={}",
+                redemption.getId(), user.getId(), transactionId, points);
     }
 
     private RewardResponse toGrantResponse(RewardGrant grant) {
@@ -159,14 +144,5 @@ public class RewardServiceImpl implements RewardService {
                 grant.getPoints(),
                 grant.getTransactionAmount(),
                 grant.getCreatedOn());
-    }
-
-    private RewardRedemptionResponse toRedemptionResponse(RewardRedemption redemption) {
-        return new RewardRedemptionResponse(
-                redemption.getId(),
-                redemption.getTransactionId(),
-                redemption.getPointsUsed(),
-                redemption.getRupeeValue(),
-                redemption.getCreatedOn());
     }
 }

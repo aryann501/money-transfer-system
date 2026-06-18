@@ -13,6 +13,7 @@ public class TransactionResponse {
     private String failureReason;
     private String category;
     private String note;
+    private Integer pointsToUse;
     private LocalDateTime createdOn;
 
     // Getters
@@ -51,6 +52,8 @@ public class TransactionResponse {
     public String getNote() {
         return note;
     }
+
+    public Integer getPointsToUse() {return pointsToUse;}
 
     public LocalDateTime getCreatedOn() {
         return createdOn;
@@ -93,6 +96,8 @@ public class TransactionResponse {
         this.note = note;
     }
 
+    public void setPointsToUse(Integer pointsToUse) {this.pointsToUse = pointsToUse;}
+
     public void setCreatedOn(LocalDateTime createdOn) {
         this.createdOn = createdOn;
     }
@@ -109,6 +114,7 @@ public class TransactionResponse {
                 ", failureReason='" + failureReason + '\'' +
                 ", category='" + category + '\'' +
                 ", note='" + note + '\'' +
+                ", pointsToUse='" + pointsToUse + '\'' +
                 ", createdOn=" + createdOn +
                 '}';
     }

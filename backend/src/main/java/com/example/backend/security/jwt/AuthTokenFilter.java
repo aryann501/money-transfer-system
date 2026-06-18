@@ -3,7 +3,7 @@ package com.example.backend.security.jwt;
 import java.io.IOException;
 import java.util.List;
 
-import org.jspecify.annotations.NonNull;
+import org.springframework.lang.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,7 +34,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-        logger.debug("AuthTokenFilter - Authorization header: {}", request.getHeader("Authorization"));
+        try {
+            logger.debug("AuthTokenFilter - Authorization header: {}", request.getHeader("Authorization"));
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUserNameFromJwtToken(jwt);

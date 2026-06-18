@@ -1,7 +1,6 @@
 package com.example.backend.controllers;
 
-import com.example.backend.dtos.RewardRedemptionRequest;
-import com.example.backend.dtos.RewardRedemptionResponse;
+
 import com.example.backend.dtos.RewardSummaryResponse;
 import com.example.backend.entities.UserEntity;
 import com.example.backend.repositories.UserRepository;
@@ -45,36 +44,5 @@ public class RewardController {
     public ResponseEntity<RewardSummaryResponse> getMyRewards() {
         logger.info("Fetching reward summary for authenticated user");
         return ResponseEntity.ok(rewardService.getMyRewards());
-    }
-
-    @PostMapping("/redeem")
-    @PreAuthorize("hasRole('USER')")
-    @Operation(summary = "Redeem reward points",
-            description = "Redeems reward points for a specific transaction.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Redemption successful"),
-            @ApiResponse(responseCode = "400", description = "Invalid request or business rule violation"),
-            @ApiResponse(responseCode = "401", description = "Unauthenticated")
-    })
-    public ResponseEntity<RewardRedemptionResponse> redeemPoints(@Valid @RequestBody RewardRedemptionRequest request) {
-        // Resolve current authenticated user
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext()
-                .getAuthentication().getPrincipal();
-        Long userId = userDetails.getId();
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Authenticated user not found"));
-
-        // Validate available points
-        int available = rewardService.getAvailablePoints(userId);
-        if (request.getPointsToUse() > available) {
-            logger.warn("Insufficient reward points | userId={} | requested={} | available={}",
-                    userId, request.getPointsToUse(), available);
-            throw new com.example.backend.exceptions.InsufficientRewardPointsException(request.getPointsToUse(), available);
-        }
-
-        logger.info("Redeeming points | userId={} | txId={} | points={}",
-                userId, request.getTransactionId(), request.getPointsToUse());
-        var response = rewardService.redeemPointsForTransfer(user, request.getTransactionId(), request.getPointsToUse());
-        return ResponseEntity.ok(response);
     }
 }

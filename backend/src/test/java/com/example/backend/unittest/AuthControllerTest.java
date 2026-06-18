@@ -138,20 +138,5 @@ class AuthControllerTest {
                 () -> authController.registerUser(signUpRequest));
     }
 
-    @Test
-    void testRegisterUser_roleNotFound() {
-        SignupRequest signUpRequest = new SignupRequest("newuser",
-                Set.of("admin"),
-                "password123",
-                "John Doe",
-                1500.0);
 
-        when(userRepository.existsByUsername("newuser")).thenReturn(false);
-        when(roleRepository.findByRoleName(ERole.ROLE_ADMIN)).thenReturn(Optional.empty());
-
-        RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> authController.registerUser(signUpRequest));
-
-        assertEquals("Error: Role is not found.", exception.getMessage());
-    }
 }

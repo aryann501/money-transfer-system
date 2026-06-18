@@ -31,10 +31,17 @@ public class TransactionLog {
     @Column(unique = true, nullable = false)
     private String idempotencyKey; // prevents duplicate transfers
 
+    private Integer pointToUse;
+
     private LocalDateTime createdOn;
 
     @OneToOne(mappedBy = "transactionLog", cascade = CascadeType.ALL, orphanRemoval = true)
     private TransactionDetails details;
+
+    public TransactionLog() {}
+    public TransactionLog(Integer pointToUse) {
+        this.pointToUse = pointToUse;
+    }
 
     // Getters
     public Long getId() {
@@ -64,6 +71,8 @@ public class TransactionLog {
     public String getIdempotencyKey() {
         return idempotencyKey;
     }
+
+    public Integer getPointToUse() {return pointToUse;}
 
     public LocalDateTime getCreatedOn() {
         return createdOn;
@@ -101,6 +110,8 @@ public class TransactionLog {
     public void setIdempotencyKey(String idempotencyKey) {
         this.idempotencyKey = idempotencyKey;
     }
+
+    public void setPointToUse(Integer pointToUse){this.pointToUse = pointToUse;}
 
     public void setCreatedOn(LocalDateTime createdOn) {
         this.createdOn = createdOn;

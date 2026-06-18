@@ -10,8 +10,9 @@ import com.example.backend.enums.TransactionStatus;
 import com.example.backend.exceptions.*;
 import com.example.backend.repositories.AccountRepository;
 import com.example.backend.repositories.TransactionLogRepository;
+import com.example.backend.security.service.UserDetailsImpl;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import com.example.backend.services.RewardService;
 
 import java.time.LocalDateTime;
 
@@ -44,15 +45,18 @@ private final RewardService rewardService;
                                         Double amount,
                                         String idempotencyKey,
                                         String category,
-                                        String note)
+                                        String note,
+                                        Integer pointsToUse)
             throws AccountNotFoundException,
             AccountNotActiveException,
             InsufficientBalanceException,
             DuplicateTransferException {
 
         TransactionStatus transactionStatus = TransactionStatus.SUCCESS;
-        String failureReason = null;
-        LocalDateTime now = LocalDateTime.now();
+int points = 0;
+Long userId = null;
+String failureReason = null;
+LocalDateTime now = LocalDateTime.now();
 
         Account fromAccount = accountRepository.findByAccountId(fromAccountId)
                 .orElseThrow(() -> new AccountNotFoundException(
@@ -63,11 +67,28 @@ private final RewardService rewardService;
                         String.format(RECEIVER_NOT_FOUND, toAccountId)));
 
         try {
+            // Resolve points usage
+            points = (pointsToUse != null) ? pointsToUse : 0;
+            if (points < 0) {
+                throw new IllegalArgumentException("Points to use must be >= 0");
+            }
+            // Get user id for reward points
+            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            userId = userDetails.getId();
+            int availablePoints = rewardService.getAvailablePoints(userId);
+            if (points > availablePoints) {
+                throw new IllegalArgumentException("Points to use exceed available points");
+            }
+            if (points > amount.intValue()) {
+                throw new IllegalArgumentException("Points to use exceed transfer amount");
+            }
+            double cashAmount = amount - points;
+            if (cashAmount < 0) cashAmount = 0;
             validateAccounts(fromAccount, toAccount);
-            validateBalance(fromAccount, amount);
+            validateBalance(fromAccount, cashAmount);
             validateIdempotency(idempotencyKey);
 
-            performTransfer(fromAccount, toAccount, amount);
+            performTransfer(fromAccount, toAccount, cashAmount);
 
         } catch (AccountNotActiveException |
                  InsufficientBalanceException e) {
@@ -82,15 +103,19 @@ private final RewardService rewardService;
                 fromAccount, toAccount, amount,
                 transactionStatus, failureReason,
                 idempotencyKey, now,
-                categoryEnum, note
+                categoryEnum, note, pointsToUse
         );
 
         transactionLogRepository.save(log);
-rewardService.processRewardForTransfer(log, fromAccount, toAccount);
+        rewardService.processRewardForTransfer(log, fromAccount, toAccount);
+        // Apply points redemption if any
+        if (points > 0) {
+            rewardService.processRewardRedemption(userId, String.valueOf(log.getId()), points);
+        }
 
         return buildResponse(fromAccount, toAccount, amount,
                 transactionStatus, failureReason, now,
-                categoryEnum, note);
+                categoryEnum, note, pointsToUse);
     }
 
     private void validateAccounts(Account fromAccount, Account toAccount) {
@@ -142,7 +167,7 @@ rewardService.processRewardForTransfer(log, fromAccount, toAccount);
                                                String idempotencyKey,
                                                LocalDateTime now,
                                                TransactionCategory category,
-                                               String note) {
+                                               String note, Integer pointsToUse) {
 
         TransactionLog log = new TransactionLog();
         log.setFromAccount(fromAccount);
@@ -152,6 +177,7 @@ rewardService.processRewardForTransfer(log, fromAccount, toAccount);
         log.setFailureReason(failureReason);
         log.setIdempotencyKey(idempotencyKey);
         log.setCreatedOn(now);
+        log.setPointToUse(pointsToUse);
 
         // attach details (separate table)
         TransactionDetails details = new TransactionDetails();
@@ -170,7 +196,8 @@ rewardService.processRewardForTransfer(log, fromAccount, toAccount);
                                               String failureReason,
                                               LocalDateTime now,
                                               TransactionCategory category,
-                                              String note) {
+                                              String note,
+                                              Integer pointsToUse) {
 
         TransactionResponse response = new TransactionResponse();
         response.setFromAccountId(fromAccount.getAccountId());
@@ -183,6 +210,7 @@ rewardService.processRewardForTransfer(log, fromAccount, toAccount);
         response.setCreatedOn(now);
         response.setCategory(category != null ? category.name() : null);
         response.setNote(note);
+        response.setPointsToUse(pointsToUse);
 
         return response;
     }

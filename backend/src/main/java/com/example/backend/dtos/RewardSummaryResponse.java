@@ -17,5 +17,4 @@ public class RewardSummaryResponse {
     private int totalEarned;
     private int totalRedeemed;
     private List<RewardResponse> history;
-    private List<RewardRedemptionResponse> redemptions;
 }

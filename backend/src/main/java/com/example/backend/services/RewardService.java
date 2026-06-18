@@ -1,6 +1,5 @@
 package com.example.backend.services;
 
-import com.example.backend.dtos.RewardRedemptionResponse;
 import com.example.backend.dtos.RewardSummaryResponse;
 import com.example.backend.entities.Account;
 import com.example.backend.entities.TransactionLog;
@@ -12,7 +11,7 @@ public interface RewardService {
 
     void processRewardForTransfer(TransactionLog transaction, Account fromAccount, Account toAccount);
 
-    RewardRedemptionResponse redeemPointsForTransfer(UserEntity user, String transactionId, int pointsToUse);
+
 
     int getAvailablePoints(Long userId);
 
@@ -20,4 +19,12 @@ public interface RewardService {
     BigDecimal resolveCashAmount(UserEntity user, BigDecimal transferAmount, Integer rewardPointsToUse);
 
     RewardSummaryResponse getMyRewards();
+
+    /**
+     * Process a reward redemption request. Creates a negative‑point grant record.
+     * @param userId ID of the user redeeming points
+     * @param transactionId ID of the transaction where points are applied
+     * @param pointsToRedeem Amount of points to redeem (must be > 0)
+     */
+    void processRewardRedemption(Long userId, String transactionId, int pointsToRedeem);
 }

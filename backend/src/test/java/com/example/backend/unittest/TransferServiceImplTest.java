@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import com.example.backend.services.RewardService;
 
 import java.util.Optional;
 
@@ -32,6 +33,9 @@ class TransferServiceImplTest {
 
     @Mock
     private TransactionLogRepository transactionLogRepository;
+
+    @Mock
+    private RewardService rewardService;
 
     @BeforeEach
     void setUp() {

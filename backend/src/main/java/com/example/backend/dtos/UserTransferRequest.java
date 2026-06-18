@@ -9,6 +9,7 @@ public class UserTransferRequest {
     private String category;
 
     private String note;
+    private Integer pointsToUse;
 
     // Getters
     public String getToAccountId() {
@@ -31,6 +32,10 @@ public class UserTransferRequest {
         return note;
     }
 
+    public Integer getPointsToUse() {
+        return pointsToUse;
+    }
+
     // Setters
     public void setToAccountId(String toAccountId) {
         this.toAccountId = toAccountId;
@@ -51,5 +56,12 @@ public class UserTransferRequest {
     public void setNote(String note) {
         this.note = note;
     }
+
+    public void setPointsToUse(Integer pointsToUse) {
+        this.pointsToUse = pointsToUse;
+    }
 }
+
+
+
 
