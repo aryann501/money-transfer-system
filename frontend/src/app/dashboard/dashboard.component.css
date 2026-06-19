@@ -92,13 +92,10 @@ body {
 
 /* Content Container */
 .dashboard-content {
-  width: 100%;
-  max-width: 1400px;
-  padding: 40px 40px 60px;
-  margin: 0 auto;
-  position: relative;
-  z-index: 1;
-  animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s backwards;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 24px 40px;
 }
 
 @keyframes fadeInUp {
@@ -110,26 +107,6 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* Content Wrapper - Desktop Layout */
-.content-wrapper {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  width: 100%;
-}
-
-.left-section {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.right-section {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
 }
 
 /* Top Greeting Card */
@@ -292,14 +269,6 @@ body {
   box-shadow: 
     0 12px 32px rgba(124, 58, 237, 0.35),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-}
-
-/* Option Cards Grid */
-.options {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  width: 100%;
 }
 
 .card {
@@ -514,204 +483,6 @@ body {
   font-size: 0.9rem;
 }
 
-/* Tablet View */
-@media (max-width: 1024px) {
-  .app-header .header-content {
-    padding: 0 2rem;
-  }
-
-  .dashboard-content {
-    padding: 32px 32px 48px;
-  }
-
-  .content-wrapper {
-    gap: 32px;
-  }
-
-  .balance-card .amount {
-    font-size: 2.5rem;
-  }
-
-  .card {
-    min-height: 150px;
-    padding: 32px 20px;
-  }
-}
-
-/* Mobile View - Stack Layout */
-@media (max-width: 768px) {
-  .app-header {
-    padding: 1.5rem 0;
-  }
-
-  .app-header .header-content {
-    padding: 0 1rem;
-  }
-
-  .app-header .header-content h1 {
-    font-size: 2rem;
-  }
-
-  .app-header .header-content p {
-    font-size: 0.9rem;
-  }
-
-  .dashboard-content {
-    padding: 24px 16px 36px;
-    max-width: 100%;
-  }
-
-  .content-wrapper {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .left-section,
-  .right-section {
-    gap: 20px;
-  }
-
-  .top-card {
-    padding: 24px 20px;
-    border-radius: 20px;
-  }
-
-  .top-card .user-name {
-    font-size: 1.5rem;
-  }
-
-  .greeting-icon {
-    width: 36px;
-    height: 36px;
-  }
-
-  .greeting-icon svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  .balance-card {
-    padding: 28px 24px;
-    border-radius: 24px;
-    min-height: 180px;
-  }
-
-  .balance-card .amount {
-    font-size: 2.25rem;
-  }
-
-  .options {
-    gap: 14px;
-  }
-
-  .card {
-    padding: 24px 18px;
-    min-height: 130px;
-    border-radius: 20px;
-  }
-
-  .card-icon-wrapper {
-    width: 52px;
-    height: 52px;
-    border-radius: 16px;
-  }
-
-  .card-icon-wrapper img {
-    width: 30px;
-    height: 30px;
-  }
-
-  .card p {
-    font-size: 0.875rem;
-  }
-
-  .logout-btn {
-    border-radius: 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .app-header {
-    padding: 1rem 0;
-  }
-
-  .app-header .header-content {
-    padding: 0 1rem;
-  }
-
-  .app-header .header-content h1 {
-    font-size: 1.5rem;
-  }
-
-  .app-header .header-content p {
-    font-size: 0.75rem;
-  }
-
-  .dashboard-content {
-    padding: 20px 12px 32px;
-  }
-
-  .top-card {
-    padding: 22px 18px;
-    border-radius: 18px;
-  }
-
-  .top-card .user-name {
-    font-size: 1.375rem;
-  }
-
-  .greeting-icon {
-    width: 32px;
-    height: 32px;
-  }
-
-  .greeting-icon svg {
-    width: 18px;
-    height: 18px;
-  }
-
-  .balance-card {
-    padding: 26px 20px;
-    border-radius: 20px;
-    min-height: 160px;
-  }
-
-  .balance-card .amount {
-    font-size: 2rem;
-  }
-
-  .balance-card .label {
-    font-size: 0.875rem;
-  }
-
-  .balance-card .account {
-    font-size: 0.9375rem;
-  }
-
-  .card {
-    min-height: 120px;
-    padding: 22px 16px;
-    border-radius: 18px;
-  }
-
-  .card-icon-wrapper {
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
-  }
-
-  .card-icon-wrapper img {
-    width: 28px;
-    height: 28px;
-  }
-
-  .logout-btn {
-    padding: 14px 20px;
-    border-radius: 14px;
-    font-size: 0.9375rem;
-  }
-}
-
 /* Focus styles for accessibility */
 button:focus-visible,
 .card:focus-visible {
@@ -751,4 +522,308 @@ html {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* ==========================================
+   BENTO DASHBOARD LAYOUT
+========================================== */
+
+.bento-grid {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2.2fr 1fr 1fr;
+    grid-template-rows: 140px 220px 80px;   /* ← taller rows */
+    gap: 18px;
+}
+
+/* ==========================================
+   COMMON TILE STYLE
+========================================== */
+
+.bento-card {
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(20px);
+
+    border-radius: 24px;
+    padding: 18px;   /* was 24px */
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,0.08);
+
+    border: 1px solid rgba(255,255,255,0.8);
+
+    transition: all 0.3s ease;
+}
+
+.bento-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+      0 12px 30px rgba(0,0,0,0.12);
+}
+
+/* ==========================================
+   GREETING TILE
+========================================== */
+
+.greeting-tile {
+  grid-column: 1;
+  grid-row: 1;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.greeting-tile h3 {
+  color: #64748b;
+  margin-bottom: 12px;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.greeting-tile .user-name {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0f172a;
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* ==========================================
+   BALANCE TILE
+========================================== */
+
+.balance-tile {
+    grid-column: 1;
+    grid-row: 2 / 4;
+
+    background: linear-gradient(135deg, #1e40af, #2563eb, #3b82f6);
+    color: white;
+    padding: 32px;          /* more breathing room */
+}
+
+.balance-content {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.balance-tile .amount {
+    font-size: 4rem;           /* ← was 3rem */
+    font-weight: 800;
+    margin: 10px 0 4px;
+    letter-spacing: -2px;
+    line-height: 1;
+}
+
+.balance-tile .label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0.85;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+.balance-tile .account {
+    font-size: 1.05rem;
+    font-weight: 500;
+    opacity: 0.9;
+    margin-bottom: 14px;
+}
+
+/* ==========================================
+   COIN BOX
+========================================== */
+
+.coin-box {
+    width: 130px;
+    height: 130px;
+    background: white;
+    color: #f59e0b;
+    border-radius: 24px;
+    border: 3px solid #f59e0b;       /* ← thicker border */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    font-weight: 700;
+    cursor: default;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Yellow shimmer animation on hover */
+@keyframes coinGlow {
+    0%   { box-shadow: 0 0 0px rgba(245, 158, 11, 0); }
+    50%  { box-shadow: 0 0 18px rgba(245, 158, 11, 0.7), 0 0 36px rgba(245, 158, 11, 0.3); }
+    100% { box-shadow: 0 0 0px rgba(245, 158, 11, 0); }
+}
+
+.coin-box:hover {
+    border-color: #d97706;
+    background: #fffbeb;
+    transform: scale(1.06);
+    animation: coinGlow 1.2s ease-in-out infinite;
+}
+
+.coin-box .coin-icon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+.coin-box span {
+    font-size: 2.2rem;
+    line-height: 1;
+}
+
+.coin-box small {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+/* ==========================================
+   ACTION TILES
+========================================== */
+
+.action-tile {
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 14px;
+
+    cursor: pointer;
+}
+
+.action-tile p {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.action-tile .card-icon-wrapper {
+  width: 58px;
+  height: 58px;
+
+  background: linear-gradient(
+      135deg,
+      #eff6ff,
+      #dbeafe
+  );
+
+  border-radius: 18px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.action-tile img {
+  width: 30px;
+  height: 30px;
+}
+
+/* ==========================================
+   TILE POSITIONS
+========================================== */
+
+.greeting-tile { grid-column: 1; grid-row: 1; }
+.details-tile  { grid-column: 2; grid-row: 1; }
+.reward-tile   { grid-column: 3; grid-row: 1; }
+.transfer-tile { grid-column: 2; grid-row: 2; }
+.history-tile  { grid-column: 3; grid-row: 2; }
+
+.logout-tile {
+    grid-column: 2 / 4;
+    grid-row: 3;
+    min-height: 70px;
+}
+
+/* ==========================================
+   LOGOUT TILE
+========================================== */
+
+.logout-tile {
+  grid-column: 2 / 4;
+  grid-row: 3;
+  min-height: 70px;
+
+  border: 2px solid #ef4444;
+
+  color: #ef4444;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  gap: 10px;
+
+  cursor: pointer;
+}
+
+.logout-tile p {
+  color: #ef4444;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.logout-tile:hover {
+  background: #fef2f2;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 992px) {
+    .bento-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto;
+    }
+
+    .greeting-tile,
+    .balance-tile,
+    .logout-tile {
+        grid-column: span 2;
+    }
+
+    /* Remove forced square on mobile — they'll be card-height */
+    .action-tile {
+        aspect-ratio: unset;
+        min-height: 140px;
+    }
+}
+
+@media (max-width: 768px) {
+    .bento-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .greeting-tile,
+    .balance-tile,
+    .logout-tile {
+        grid-column: auto;
+    }
+
+    .balance-tile .amount {
+        font-size: 2.5rem;
+    }
+
+    .action-tile {
+        aspect-ratio: unset;
+        min-height: 130px;
+    }
 }

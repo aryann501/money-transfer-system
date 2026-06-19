@@ -45,45 +45,60 @@ export class TransferComponent implements OnInit {
   originalAmount: number = 0;
   availablePoints: number = 0;
 
-  constructor(private fb: FormBuilder, private transferService: TransferService, private rewardService: RewardService, private router: Router) {
-    this.availablePoints = 0; // will be loaded from API
-    this.originalAmount = 0;
-    this.rawAmount = 0;
+  constructor(
+    private fb: FormBuilder,
+    private transferService: TransferService,
+    private rewardService: RewardService,  // ✅ restored
+    private router: Router
+  ) {
     this.form = this.fb.group({
-      toAccountId: ['', [Validators.required, this.accountIdValidator]],
+      toAccountId: ['', [Validators.required, TransferComponent.accountIdValidator]],
       amount: [null, [Validators.required, Validators.min(0.01)]],
       category: ['RENT', [Validators.required]],
       note: [''],
-      pointsToUse: [0, [Validators.min(0), this.pointsValidator.bind(this)]]
+      pointsToUse: [0, [Validators.min(0), this.pointsValidator.bind(this)]]  // ✅ restored
     });
 
-    // Subscribe to amount changes to keep originalAmount and rawAmount in sync
+    // ✅ Keep rawAmount and originalAmount in sync with what user types
     this.amount.valueChanges.subscribe((val) => {
       this.originalAmount = val ?? 0;
       this.rawAmount = this.originalAmount;
       this.updateAdjustedAmount();
     });
-    // Also react to points changes to recalculate adjusted amount
+
+    // ✅ Recalculate adjusted amount when points change
     this.pointsToUse.valueChanges.subscribe(() => {
       this.updateAdjustedAmount();
     });
   }
 
   ngOnInit(): void {
-    // Fetch available reward points from backend
-    this.rewardService.getMyRewards().subscribe((res) => {
-      this.availablePoints = (res as any).availablePoints ?? 0;
-    }, (error) => {
-      console.error('Failed to load reward points', error);
-    });
+    // ✅ Fetch available reward points from backend
+    this.rewardService.getMyRewards().subscribe(
+      (res) => {
+        this.availablePoints = (res as any).availablePoints ?? 0;
+      },
+      (error) => {
+        console.error('Failed to load reward points', error);
+      }
+    );
   }
 
-  accountIdValidator(control: AbstractControl): ValidationErrors | null {
+  static accountIdValidator(
+    control: AbstractControl
+  ): ValidationErrors | null {
+
     if (!control.value) {
       return null;
     }
-    const pattern = /^ACC\d{4}$/;
-    return pattern.test(control.value) ? null : { invalidAccountId: true };
+
+    const value = String(control.value)
+      .trim()
+      .toUpperCase();
+
+    return /^ACC\d{4}$/.test(value)
+      ? null
+      : { invalidAccountId: true };
   }
 
   goBack(): void {
@@ -96,6 +111,7 @@ export class TransferComponent implements OnInit {
   get note() { return this.form.get('note')!; }
   get pointsToUse() { return this.form.get('pointsToUse')!; }
 
+  // ✅ Uses `this` — must stay instance method with .bind(this) in FormBuilder
   pointsValidator(control: AbstractControl): ValidationErrors | null {
     const pts = control.value ?? 0;
     const amt = this.originalAmount ?? 0;
@@ -123,9 +139,8 @@ export class TransferComponent implements OnInit {
       this.form.markAllAsTouched();
       return;
     }
-    // Ensure latest points are reflected before submission
-    this.updateAdjustedAmount();
 
+    this.updateAdjustedAmount();
     this.submitting = true;
     this.serverErrorMessage = null;
     this.successMessage = null;
@@ -175,10 +190,8 @@ export class TransferComponent implements OnInit {
     let message: string;
 
     if (typeof err.error === 'string') {
-      // backend returned plain string
       message = err.error;
     } else if (err.error && (err.error.message || err.error.failureReason)) {
-      // backend returned JSON object
       message = err.error.message || err.error.failureReason;
     } else {
       message = err.message || 'Transaction failed';

@@ -1,9 +1,12 @@
+// File: e:/Intern/money-transfer-system/frontend/src/app/dashboard/dashboard.component.ts
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { AccountService } from '../services/account.service';
+import { RewardService } from '../services/reward.service';
 import { Account } from '../models/account.model';
 import { JwtResponse } from '../models/jwt-response.model';
+import { RewardSummaryResponse } from '../models/reward-summary-response.model';
 import { CurrencyPipe, NgIf } from '@angular/common';
 
 @Component({
@@ -14,37 +17,37 @@ import { CurrencyPipe, NgIf } from '@angular/common';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  username: string = '';
-  role: string = '';
+  username = '';
+  role = '';
   account: Account | null = null;
+  reward: RewardSummaryResponse | null = null;   // <-- NEW
 
   constructor(
     private router: Router,
     private authService: AuthService,
-    private accountService: AccountService
-  ) {}
+    private accountService: AccountService,
+    private rewardService: RewardService          // <-- NEW
+  ) { }
 
   ngOnInit(): void {
-    // Retrieve JWT response from localStorage
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       const jwtResponse: JwtResponse = JSON.parse(storedUser);
       this.username = jwtResponse.username;
-      this.role = jwtResponse.roles[0]; // assume single role
+      this.role = jwtResponse.roles[0];
 
       if (this.role === 'ROLE_USER') {
-        // Fetch account details for user
-        this.accountService.getMyDetails().subscribe({
-          next: (acc) => (this.account = acc),
-          error: (err) => console.error('Failed to fetch account details', err)
-        });
+        // Account details
+        this.accountService.getMyDetails().subscribe(acc => this.account = acc);
+        // *** Reward summary ***
+        this.rewardService.getMyRewards().subscribe(res => this.reward = res);
       }
     }
   }
 
   logout(): void {
     this.authService.logout();
-    localStorage.removeItem('user'); // clear user info
+    localStorage.removeItem('user');
     this.router.navigate(['/login']);
   }
 

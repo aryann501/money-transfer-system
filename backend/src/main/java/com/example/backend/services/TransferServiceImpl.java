@@ -119,6 +119,10 @@ LocalDateTime now = LocalDateTime.now();
     }
 
     private void validateAccounts(Account fromAccount, Account toAccount) {
+        // Disallow transfers to the same account
+        if (fromAccount.getAccountId().equals(toAccount.getAccountId())) {
+            throw new IllegalArgumentException("You cannot transfer money to your own account");
+        }
         if (fromAccount.getStatus() != AccountStatus.ACTIVE) {
             throw new AccountNotActiveException(SENDER_NOT_ACTIVE);
         }
