@@ -73,7 +73,10 @@ export class TransferComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // ✅ Fetch available reward points from backend
+    this.fetchAvailablePoints();
+  }
+
+  private fetchAvailablePoints(): void {
     this.rewardService.getMyRewards().subscribe(
       (res) => {
         this.availablePoints = (res as any).availablePoints ?? 0;

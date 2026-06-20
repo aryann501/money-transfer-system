@@ -32,8 +32,6 @@
   font-weight: 700;
   letter-spacing: -0.5px;
   margin: 0;
-  text-align: center;
-  width: 100%;
 }
 
 .app-header .header-content p {
@@ -41,8 +39,6 @@
   opacity: 0.95;
   font-weight: 400;
   margin: 0.5rem 0 0 0;
-  text-align: center;
-  width: 100%;
 }
 
 /* Page Header */
@@ -118,7 +114,6 @@
   overflow: hidden;
 }
 
-/* Background Decorations */
 .transfer-container::before {
   content: '';
   position: absolute;
@@ -126,14 +121,13 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
+  background:
     radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
     radial-gradient(circle at 80% 70%, rgba(96, 165, 250, 0.06) 0%, transparent 50%),
     radial-gradient(circle at 50% 50%, rgba(30, 58, 138, 0.04) 0%, transparent 60%);
   pointer-events: none;
 }
 
-/* Subtle Pattern Overlay */
 .transfer-container::after {
   content: '';
   position: absolute;
@@ -141,7 +135,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
+  background-image:
     linear-gradient(rgba(59, 130, 246, 0.02) 1px, transparent 1px),
     linear-gradient(90deg, rgba(59, 130, 246, 0.02) 1px, transparent 1px);
   background-size: 60px 60px;
@@ -157,7 +151,7 @@
   border-radius: 32px;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px) saturate(180%);
-  box-shadow: 
+  box-shadow:
     0 20px 60px rgba(0, 0, 0, 0.12),
     0 0 1px rgba(0, 0, 0, 0.05),
     0 0 0 1px rgba(255, 255, 255, 1) inset;
@@ -170,17 +164,10 @@
 }
 
 @keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(50px) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  from { opacity: 0; transform: translateY(50px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* Premium Glow Effect */
 .transfer-card::before {
   content: '';
   position: absolute;
@@ -195,7 +182,7 @@
 /* Card Header */
 .card-header {
   background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%);
-  padding: 32px 32px;
+  padding: 32px;
   text-align: center;
   border-bottom: 3px solid #1e40af;
   position: relative;
@@ -227,14 +214,8 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 0.8;
-  }
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.1); opacity: 0.8; }
 }
 
 .card-header h2 {
@@ -243,7 +224,6 @@
   font-weight: 800;
   color: white;
   letter-spacing: -0.5px;
-  text-align: center;
   position: relative;
   z-index: 1;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
@@ -255,13 +235,12 @@
   color: white;
   opacity: 0.95;
   font-weight: 500;
-  text-align: center;
   letter-spacing: 0.2px;
   position: relative;
   z-index: 1;
 }
 
-/* Form Styles */
+/* Form */
 form {
   padding: 36px 32px 32px;
   background: white;
@@ -275,7 +254,7 @@ form {
 }
 
 label {
-  font-size: 0.9375rem;
+  font-size: 0.8125rem;
   margin-bottom: 12px;
   font-weight: 600;
   color: #0f172a;
@@ -283,7 +262,6 @@ label {
   align-items: center;
   gap: 8px;
   text-transform: uppercase;
-  font-size: 0.8125rem;
   letter-spacing: 0.3px;
 }
 
@@ -336,12 +314,11 @@ select:focus,
 textarea:focus {
   border-color: #3b82f6;
   background: white;
-  box-shadow: 
+  box-shadow:
     0 0 0 4px rgba(59, 130, 246, 0.12),
     0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
-/* Textarea specific */
 textarea {
   resize: vertical;
   min-height: 90px;
@@ -369,7 +346,7 @@ textarea {
   padding-left: 48px;
 }
 
-/* Select Styling - Plain without waves */
+/* Select */
 select {
   cursor: pointer;
   appearance: none;
@@ -382,27 +359,32 @@ select {
 select:focus {
   background-image: url("data:image/svg+xml,%3Csvg width='14' height='9' viewBox='0 0 14 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L7 7.5L13 1.5' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   border-color: #e2e8f0;
-  background: #f8fafc;
+  background-color: #f8fafc;
   box-shadow: none;
 }
 
 /* Error States */
 .form-group.has-error input,
 .form-group.has-error select,
-.form-group.has-error textarea {
+.form-group.has-error textarea,
+.points-input-box.has-error input,
+input.input-invalid {
   border-color: #ef4444;
   background: #fef2f2;
 }
 
 .form-group.has-error input:focus,
 .form-group.has-error select:focus,
-.form-group.has-error textarea:focus {
-  box-shadow: 
+.form-group.has-error textarea:focus,
+.points-input-box.has-error input:focus,
+input.input-invalid:focus {
+  box-shadow:
     0 0 0 4px rgba(239, 68, 68, 0.12),
     0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
-.form-group.has-error .label-icon svg {
+.form-group.has-error .label-icon svg,
+.points-input-box.has-error .label-icon svg {
   color: #ef4444;
 }
 
@@ -436,6 +418,103 @@ select:focus {
   color: #ef4444;
 }
 
+/* Utility: hide an element (kept for any future JS-driven toggles) */
+.hidden {
+  display: none !important;
+}
+
+/* ═══════════════════════════════════════════
+   POINTS ROW — side-by-side layout
+   ═══════════════════════════════════════════ */
+.points-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 26px;
+}
+
+/* Left: Points to Use — plain, no box, matches normal form-group style */
+.points-input-box {
+  flex: 1.4;
+  display: flex;
+  flex-direction: column;
+}
+
+.points-input-box label {
+  font-size: 0.8125rem;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: #0f172a;
+  letter-spacing: 0.3px;
+}
+
+.points-input-box .label-icon svg {
+  color: #64748b;
+}
+
+.points-input-box input {
+  padding: 16px 20px;
+  border-radius: 16px;
+  border: 2px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.points-input-box input:hover {
+  border-color: #cbd5e1;
+  background: #f1f5f9;
+}
+
+.points-input-box input:focus {
+  border-color: #3b82f6;
+  background: white;
+  box-shadow:
+    0 0 0 4px rgba(59, 130, 246, 0.12),
+    0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Right: Current Points — amber display badge */
+.current-points-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 2px solid #f59e0b;
+  border-radius: 18px;
+  padding: 16px 12px;
+  min-height: 100%;
+  gap: 6px;
+  transition: box-shadow 0.2s ease;
+}
+
+.current-points-box:hover {
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
+}
+
+.current-points-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #92400e;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.current-points-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #b45309;
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+/* ═══════════════════════════════════════════ */
+
 /* Submit Button */
 .submit-btn {
   width: 100%;
@@ -451,7 +530,7 @@ select:focus {
   font-size: 1.0625rem;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 
+  box-shadow:
     0 8px 24px rgba(59, 130, 246, 0.35),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
   font-family: 'Inter', 'Segoe UI', 'Roboto', -apple-system, sans-serif;
@@ -479,7 +558,7 @@ select:focus {
 .submit-btn:hover:not(:disabled) {
   background-position: right center;
   transform: translateY(-2px);
-  box-shadow: 
+  box-shadow:
     0 12px 32px rgba(59, 130, 246, 0.45),
     0 0 0 1px rgba(255, 255, 255, 0.15) inset;
 }
@@ -490,7 +569,7 @@ select:focus {
 
 .submit-btn:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 
+  box-shadow:
     0 4px 16px rgba(59, 130, 246, 0.3),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
 }
@@ -532,11 +611,10 @@ select:focus {
   align-items: center;
   gap: 10px;
   margin-top: 12px;
-  border: 2px solid;
+  border: 2px solid rgba(239, 68, 68, 0.3);
   line-height: 1.5;
   background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
   color: #dc2626;
-  border-color: rgba(239, 68, 68, 0.3);
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.12);
 }
 
@@ -549,24 +627,18 @@ select:focus {
   justify-content: center;
 }
 
-/* Receipt Card Styles */
+/* Receipt Card */
 .receipt-card {
   max-width: 540px;
   animation: scaleIn 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
-/* Success Receipt Header */
+/* Receipt Header - Success */
 .receipt-header {
   background: linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%);
   padding: 48px 32px;
@@ -600,28 +672,12 @@ select:focus {
   animation: pulse 10s ease-in-out infinite reverse;
 }
 
-/* Failed Receipt Header */
+/* Receipt Header - Failed */
 .receipt-header.failed-header {
   background: linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #f87171 100%);
 }
 
-.success-badge {
-  width: 72px;
-  height: 72px;
-  background: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 20px;
-  box-shadow: 
-    0 12px 32px rgba(0, 0, 0, 0.2),
-    0 0 0 4px rgba(255, 255, 255, 0.2);
-  position: relative;
-  z-index: 1;
-  animation: successPulse 1s ease-in-out;
-}
-
+.success-badge,
 .failed-badge {
   width: 72px;
   height: 72px;
@@ -631,48 +687,29 @@ select:focus {
   align-items: center;
   justify-content: center;
   margin: 0 auto 20px;
-  box-shadow: 
+  box-shadow:
     0 12px 32px rgba(0, 0, 0, 0.2),
     0 0 0 4px rgba(255, 255, 255, 0.2);
   position: relative;
   z-index: 1;
-  animation: shake 0.6s ease-in-out;
 }
 
+.success-badge { animation: successPulse 1s ease-in-out; }
+.failed-badge  { animation: shake 0.6s ease-in-out; }
+
 @keyframes successPulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.1); }
 }
 
 @keyframes shake {
-  0%, 100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-10px);
-  }
-  75% {
-    transform: translateX(10px);
-  }
+  0%, 100% { transform: translateX(0); }
+  25%       { transform: translateX(-10px); }
+  75%       { transform: translateX(10px); }
 }
 
-.success-badge svg {
-  width: 38px;
-  height: 38px;
-  color: #10b981;
-  stroke-width: 2.5;
-}
-
-.failed-badge svg {
-  width: 38px;
-  height: 38px;
-  color: #ef4444;
-  stroke-width: 2.5;
-}
+.success-badge svg { width: 38px; height: 38px; color: #10b981; stroke-width: 2.5; }
+.failed-badge svg  { width: 38px; height: 38px; color: #ef4444; stroke-width: 2.5; }
 
 .receipt-header h2 {
   margin: 0 0 10px 0;
@@ -690,7 +727,6 @@ select:focus {
   opacity: 0.95;
   position: relative;
   z-index: 1;
-  letter-spacing: 0.2px;
   font-weight: 400;
 }
 
@@ -706,9 +742,7 @@ select:focus {
 .amount-display::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 0; left: 0; right: 0;
   height: 2px;
   background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.4), transparent);
 }
@@ -722,13 +756,12 @@ select:focus {
 }
 
 .amount-label {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: #64748b;
   font-weight: 600;
   margin-bottom: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  font-size: 0.8125rem;
 }
 
 .amount-value {
@@ -759,7 +792,7 @@ select:focus {
 }
 
 .section-title {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   color: #64748b;
   text-transform: uppercase;
@@ -767,7 +800,6 @@ select:focus {
   margin-bottom: 18px;
   padding-bottom: 10px;
   border-bottom: 2px solid #f1f5f9;
-  font-size: 0.8125rem;
 }
 
 .receipt-row {
@@ -794,14 +826,13 @@ select:focus {
 
 .receipt-row .label {
   color: #64748b;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   display: flex;
   align-items: center;
   gap: 8px;
   min-width: 110px;
   text-transform: uppercase;
-  font-size: 0.8125rem;
   letter-spacing: 0.3px;
 }
 
@@ -828,7 +859,6 @@ select:focus {
   line-height: 1.5;
 }
 
-/* Account Info */
 .account-info {
   display: flex;
   flex-direction: column;
@@ -871,7 +901,6 @@ select:focus {
   box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
 }
 
-/* Failure Reason */
 .failure-reason {
   color: #dc2626 !important;
   font-weight: 600 !important;
@@ -907,12 +936,8 @@ select:focus {
 }
 
 @keyframes tick {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.15);
-  }
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.15); }
 }
 
 .timer-badge strong {
@@ -921,7 +946,7 @@ select:focus {
   font-size: 0.9375rem;
 }
 
-/* Footer Styles */
+/* Footer */
 .app-footer {
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   color: white;
@@ -936,230 +961,59 @@ select:focus {
   font-size: 0.9rem;
 }
 
-/* Responsive Design */
+/* ─── Responsive ─── */
 @media (max-width: 768px) {
-  .app-header {
-    padding: 1.5rem 0;
-  }
+  .app-header { padding: 1.5rem 0; }
+  .app-header .header-content { padding: 0 1rem; }
+  .app-header .header-content h1 { font-size: 2rem; }
+  .app-header .header-content p { font-size: 0.9rem; }
+  .page-header-content { padding: 0 1rem; gap: 16px; }
+  .page-title { font-size: 1.25rem; }
+  .back-btn { padding: 8px 14px; font-size: 0.875rem; position: static; }
+  .transfer-container { padding: 24px 12px; }
+  .transfer-card { border-radius: 28px; }
+  .card-header, .receipt-header { padding: 28px; }
+  .card-header h2, .receipt-header h2 { font-size: 1.625rem; }
+  form, .receipt-body { padding: 28px 28px 24px; }
+  .amount-display { padding: 28px 24px; }
+  .amount-value { font-size: 2.375rem; }
+  .success-badge, .failed-badge { width: 64px; height: 64px; }
+  .receipt-row { flex-direction: column; gap: 8px; padding: 12px 0; }
+  .receipt-row .label, .receipt-row .value { text-align: left; }
+  .receipt-footer { padding: 20px 28px; }
 
-  .app-header .header-content {
-    padding: 0 1rem;
-  }
-
-  .app-header .header-content h1 {
-    font-size: 2rem;
-  }
-
-  .app-header .header-content p {
-    font-size: 0.9rem;
-  }
-
-  .page-header-content {
-    padding: 0 1rem;
-    gap: 16px;
-  }
-
-  .page-title {
-    font-size: 1.25rem;
-  }
-
-  .back-btn {
-    padding: 8px 14px;
-    font-size: 0.875rem;
-    position: static;
-  }
-
-  .transfer-container {
-    padding: 24px 12px;
-  }
-
-  .transfer-card {
-    border-radius: 28px;
-  }
-
-  .card-header,
-  .receipt-header,
-  .receipt-header.failed-header {
-    padding: 28px 28px;
-  }
-
-  .card-header h2 {
-    font-size: 1.625rem;
-  }
-
-  .receipt-header h2 {
-    font-size: 1.625rem;
-  }
-
-  form,
-  .receipt-body {
-    padding: 28px 28px 24px;
-  }
-
-  .amount-display,
-  .amount-display.failed-amount {
-    padding: 28px 24px;
-  }
-
-  .amount-value {
-    font-size: 2.375rem;
-  }
-
-  .success-badge,
-  .failed-badge {
-    width: 64px;
-    height: 64px;
-  }
-
-  .success-badge svg,
-  .failed-badge svg {
-    width: 34px;
-    height: 34px;
-  }
-
-  .receipt-row {
-    flex-direction: column;
-    gap: 8px;
-    padding: 12px 0;
-  }
-
-  .receipt-row .label,
-  .receipt-row .value {
-    text-align: left;
-  }
-
-  .account-info {
-    align-items: flex-start;
-  }
-
-  .receipt-footer {
-    padding: 20px 28px;
-  }
+  /* Points row stacks vertically on mobile */
+  .points-row { flex-direction: column; }
+  .current-points-box { flex-direction: row; justify-content: space-between; padding: 14px 18px; }
 }
 
 @media (max-width: 480px) {
-  .app-header {
-    padding: 1rem 0;
-  }
-
-  .app-header .header-content {
-    padding: 0 1rem;
-  }
-
-  .app-header .header-content h1 {
-    font-size: 1.5rem;
-  }
-
-  .app-header .header-content p {
-    font-size: 0.75rem;
-  }
-
-  .page-header-content {
-    padding: 0 0.75rem;
-    gap: 12px;
-    flex-direction: column;
-  }
-
-  .page-title {
-    font-size: 1.125rem;
-  }
-
-  .back-btn {
-    padding: 6px 12px;
-    font-size: 0.8125rem;
-    position: static;
-    align-self: flex-start;
-  }
-
-  .back-btn svg {
-    width: 18px;
-    height: 18px;
-  }
-
-  .transfer-container {
-    padding: 16px 8px;
-  }
-
-  .transfer-card {
-    border-radius: 24px;
-  }
-
-  .card-header,
-  .receipt-header,
-  .receipt-header.failed-header {
-    padding: 24px 24px;
-  }
-
-  .card-header h2 {
-    font-size: 1.5rem;
-  }
-
-  .receipt-header h2 {
-    font-size: 1.5rem;
-  }
-
-  form,
-  .receipt-body {
-    padding: 24px 24px 20px;
-  }
-
-  .form-group {
-    margin-bottom: 22px;
-  }
-
-  input,
-  select,
-  textarea {
-    padding: 14px 18px;
-    font-size: 0.9rem;
-  }
-
-  .input-with-currency input {
-    padding-left: 44px;
-  }
-
-  .currency-symbol {
-    left: 18px;
-    font-size: 1rem;
-  }
-
-  .submit-btn {
-    padding: 15px 24px;
-    font-size: 1rem;
-  }
-
-  .amount-display,
-  .amount-display.failed-amount {
-    padding: 24px 20px;
-  }
-
-  .amount-value {
-    font-size: 2rem;
-  }
-
-  .success-badge,
-  .failed-badge {
-    width: 56px;
-    height: 56px;
-  }
-
-  .success-badge svg,
-  .failed-badge svg {
-    width: 30px;
-    height: 30px;
-  }
-
-  .receipt-footer {
-    padding: 18px 24px;
-  }
-
-  .timer-badge {
-    padding: 10px 20px;
-    font-size: 0.8125rem;
-  }
+  .app-header { padding: 1rem 0; }
+  .app-header .header-content h1 { font-size: 1.5rem; }
+  .app-header .header-content p { font-size: 0.75rem; }
+  .page-header-content { padding: 0 0.75rem; gap: 12px; flex-direction: column; }
+  .page-title { font-size: 1.125rem; }
+  .back-btn { padding: 6px 12px; font-size: 0.8125rem; position: static; align-self: flex-start; }
+  .back-btn svg { width: 18px; height: 18px; }
+  .transfer-container { padding: 16px 8px; }
+  .transfer-card { border-radius: 24px; }
+  .card-header, .receipt-header { padding: 24px; }
+  .card-header h2 { font-size: 1.5rem; }
+  form, .receipt-body { padding: 24px 24px 20px; }
+  .form-group { margin-bottom: 22px; }
+  input, select, textarea { padding: 14px 18px; font-size: 0.9rem; }
+  .input-with-currency input { padding-left: 44px; }
+  .currency-symbol { left: 18px; font-size: 1rem; }
+  .submit-btn { padding: 15px 24px; font-size: 1rem; }
+  .amount-display { padding: 24px 20px; }
+  .amount-value { font-size: 2rem; }
+  .success-badge, .failed-badge { width: 56px; height: 56px; }
+  .receipt-footer { padding: 18px 24px; }
+  .timer-badge { padding: 10px 20px; font-size: 0.8125rem; }
+  .current-points-value { font-size: 1.4rem; }
 }
 
-/* Focus styles for accessibility */
+/* Accessibility */
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
@@ -1169,7 +1023,4 @@ textarea:focus-visible {
   border-radius: 4px;
 }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }

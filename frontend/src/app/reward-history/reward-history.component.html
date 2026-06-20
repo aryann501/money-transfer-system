@@ -1,81 +1,91 @@
-<div class="page-wrapper">
-  <!-- Application Header -->
-  <header class="app-header">
-    <div class="header-content">
-      <h1>FinSwift</h1>
-      <p>Fast and secure financing</p>
-    </div>
-  </header>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FinSwift – Account Details</title>
+</head>
+<body>
+  <div class="page-wrapper">
+    <!-- Application Header -->
+    <header class="app-header">
+      <div class="header-content">
+        <h1>FinSwift</h1>
+        <p>Fast and secure financing</p>
+      </div>
+    </header>
 
-  <!-- Page Header -->
-  <div class="page-header">
-    <div class="page-header-content">
-      <button class="back-btn" (click)="goBack()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="19" y1="12" x2="5" y2="12"></line>
-          <polyline points="12 19 5 12 12 5"></polyline>
-        </svg>
-        <span>Back to Dashboard</span>
-      </button>
-      <h2 class="page-title">Reward History</h2>
-    </div>
-  </div>
-
-  <!-- Main Content -->
-  <div class="history-container">
-    <!-- Nav bar -->
-    <div class="nav-bar">
-      <button [class.active]="activeTab === 'incoming'" (click)="setTab('incoming')" class="nav-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
-        <span>Incoming</span>
-      </button>
-      <button [class.active]="activeTab === 'outgoing'" (click)="setTab('outgoing')" class="nav-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="6 15 12 9 18 15"></polyline>
-        </svg>
-        <span>Outgoing</span>
-      </button>
-      <button [class.active]="activeTab === 'all'" (click)="setTab('all')" class="nav-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"></circle>
-        </svg>
-        <span>All</span>
-      </button>
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-header-content">
+        <button class="back-btn" (click)="goBack()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          <span>Back to Dashboard</span>
+        </button>
+        <h2 class="page-title">Reward History</h2>
+      </div>
     </div>
 
-    <!-- History Tab -->
-    <div class="transactions">
-      <div *ngFor="let r of filteredHistory" class="transaction-card" [ngClass]="{'credit': true}">
-        <div class="card-left">
-          <div class="icon-wrapper credit">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="8" x2="12" y2="12"></line>
-            </svg>
-          </div>
-          <div class="transaction-details">
-            <div class="transaction-title">Reward ID: {{ r.id }}</div>
-            <div class="transaction-subtitle">Transaction: {{ r.transactionId }}</div>
-            <div class="timestamp">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Main Content -->
+    <div class="history-container">
+      <!-- Nav bar -->
+      <div class="nav-bar">
+        <button [class.active]="activeTab === 'all'" (click)="setTab('all')" class="nav-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+          </svg>
+          <span>All</span>
+        </button>
+        <button [class.active]="activeTab === 'Earned'" (click)="setTab('Earned')" class="nav-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+          <span>Earned</span>
+        </button>
+        <button [class.active]="activeTab === 'Spent'" (click)="setTab('Spent')" class="nav-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 15 12 9 18 15"></polyline>
+          </svg>
+          <span>Spent</span>
+        </button>
+      </div>
+
+      <!-- History Tab -->
+      <div class="transactions">
+        <div *ngFor="let r of filteredHistory" class="transaction-card" [ngClass]="{'credit': true}">
+          <div class="card-left">
+            <div class="icon-wrapper credit">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
               </svg>
-              {{ r.id | date:'short' }}
+            </div>
+            <div class="transaction-details">
+              <div class="transaction-title">Reward ID: {{ r.id }}</div>
+              <div class="transaction-subtitle">Transaction: {{ r.transactionId }}</div>
+              <div class="timestamp">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                {{ r.id | date:'short' }}
+              </div>
             </div>
           </div>
-        </div>
-        <div class="card-right">
-          <div class="amount" [ngClass]="{'credit': r.points > 0, 'debit': r.points < 0}">{{ r.points > 0 ? '+' : '' }}{{ r.points }} pts (₹{{ r.value | number:'1.2-2' }})</div>
+          <div class="card-right">
+            <div class="amount" [ngClass]="{'credit': r.points > 0, 'debit': r.points < 0}">{{ r.points > 0 ? '+' : '' }}{{ r.points }} pts (₹{{ r.value | number:'1.2-2' }})</div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Footer -->
-  <footer class="app-footer">
-    <p>&copy; 2026 FinSwift. All rights reserved.</p>
-  </footer>
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>&copy; 2026 FinSwift. All rights reserved.</p>
+    </footer>
 </div>
+</body>
+</html>

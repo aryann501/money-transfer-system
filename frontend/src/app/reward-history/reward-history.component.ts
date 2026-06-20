@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
 export class RewardHistoryComponent implements OnInit {
   rewardSummary: RewardSummaryResponse | null = null;
   // Tabs: incoming (+), outgoing (-), and all history
-  activeTab: 'incoming' | 'outgoing' | 'all' = 'all';
+  activeTab: 'Earned' | 'Spent' | 'all' = 'all';
 
   constructor(private rewardService: RewardService, private router: Router) { }
 
@@ -35,9 +35,9 @@ export class RewardHistoryComponent implements OnInit {
   get filteredHistory() {
     if (!this.rewardSummary) return [];
     switch (this.activeTab) {
-      case 'incoming':
+      case 'Earned':
         return this.rewardSummary.history.filter(r => r.points > 0);
-      case 'outgoing':
+      case 'Spent':
         return this.rewardSummary.history.filter(r => r.points < 0);
       case 'all':
         return this.rewardSummary.history;
@@ -46,7 +46,7 @@ export class RewardHistoryComponent implements OnInit {
     }
   }
 
-  setTab(tab: 'incoming' | 'outgoing' | 'all'): void {
+  setTab(tab: 'all' | 'Earned' | 'Spent'): void {
     this.activeTab = tab;
   }
 }
