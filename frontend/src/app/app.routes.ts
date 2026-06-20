@@ -11,6 +11,7 @@ export const routes: Routes = [
 
   { path: 'transfer', loadComponent: () => import('./transfer/transfer.component').then(m => m.TransferComponent), canActivate: [AuthGuard] },
   { path: 'history', loadComponent: () => import('./history/history.component').then(m => m.HistoryComponent), canActivate: [AuthGuard] },
+  { path: 'rewards', loadComponent: () => import('./reward-history/reward-history.component').then(m => m.RewardHistoryComponent), canActivate: [AuthGuard] },
   { path: 'details', loadComponent: () => import('./details/details.component').then(m => m.DetailsComponent), canActivate: [AuthGuard] },
 
   { path: 'search-account', loadComponent: () => import('./search-account/search-account.component').then(m => m.SearchAccountComponent), canActivate: [AuthGuard] },
